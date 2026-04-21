@@ -1,0 +1,47 @@
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.quick-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  border: 1px solid #e8edf4;
+  transition: box-shadow 0.15s, transform 0.1s;
+}
+
+.quick-card:hover {
+  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.1);
+  transform: translateY(-1px);
+}
+
+.qc-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.qc-icon.blue   { background: #e3f0fb; }
+.qc-icon.teal   { background: #e1f5ee; }
+.qc-icon.amber  { background: #faeeda; }
+.qc-icon.purple { background: #eeedfe; }
+
+.qc-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 2px;
+}
+
+.qc-sub {
+  font-size: 11px;
+  color: #94a3b8;
+}
