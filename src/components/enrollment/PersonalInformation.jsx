@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const s = {
   sectionTitle: {
@@ -107,6 +107,18 @@ function StudentTypeBadge({ type }) {
 export default function PersonalInformation({ onNext }) {
   const [photoSrc, setPhotoSrc] = useState(null);
   const [studentType, setStudentType] = useState("continuing");
+  const [currentUser, setCurrentUser] = useState({ firstName: "", lastName: "" });
+
+  useEffect(() => {
+    const userJson = localStorage.getItem('onlium_current_user');
+    if (userJson) {
+      const user = JSON.parse(userJson);
+      setCurrentUser({
+        firstName: user.firstName || "",
+        lastName: user.lastName || ""
+      });
+    }
+  }, []);
 
   function handlePhoto(e) {
     const file = e.target.files[0];
@@ -128,25 +140,6 @@ export default function PersonalInformation({ onNext }) {
         <div style={{ marginBottom: 20 }}>
           <h2 style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 800, color: "#0f172a", margin: 0 }}>Enrollment</h2>
           <p style={{ fontSize: 12.5, color: "#64748b", marginTop: 4 }}>BS Information Technology — 2nd Year · Continuing Student · SY 2026</p>
-        </div>
-
-        {/* Step Progress */}
-        <div style={{ display: "flex", gap: 0, marginBottom: 24, background: "#fff", borderRadius: 12, border: "1px solid #e2e8f0", overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
-          {[
-            { label: "Personal Info", active: true },
-            { label: "Upload Requirements", active: false },
-            { label: "Select Program", active: false },
-            { label: "Choose Schedule", active: false },
-            { label: "Submit Requirements", active: false },
-            { label: "Finalize Enrollment", active: false },
-          ].map((step, i) => (
-            <div key={i} style={{ flex: 1, padding: "12px 10px", textAlign: "center", background: step.active ? "#2563eb" : "#fff", borderRight: i < 5 ? "1px solid #e2e8f0" : "none", position: "relative" }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: step.active ? "#fff" : "#94a3b8" }}>{step.label}</div>
-              <div style={{ fontSize: 10, color: step.active ? "#bfdbfe" : "#cbd5e1", marginTop: 2 }}>
-                {step.active ? "In Progress" : "In Progress"}
-              </div>
-            </div>
-          ))}
         </div>
 
         {/* Main Card */}
@@ -187,60 +180,32 @@ export default function PersonalInformation({ onNext }) {
               <p style={{ fontSize: 12.5, color: banner.color, lineHeight: 1.5, margin: 0 }}>{banner.text}</p>
             </div>
 
-            {/* ID Photo */}
-            <div style={s.sectionTitle}>ID Photo</div>
-            {isContinuing ? (
-              <div style={{ padding: 12, borderRadius: 8, background: "#f8fafc", border: "1px solid #e2e8f0", marginBottom: 8 }}>
-                <div style={{ fontWeight: 700, color: "#2563eb", marginBottom: 6 }}>2×2 Photo Not Required</div>
-                <div style={{ color: "#64748b", fontSize: 13 }}>Continuing students: we already have your photo on file. You can skip uploading a new 2×2 here. Proceed to the next step to upload your Clearance.</div>
-              </div>
-            ) : (
-              <div style={{ display: "flex", gap: 20, alignItems: "flex-start", marginBottom: 4 }}>
-                <label htmlFor="photoInput" style={{ width: 90, height: 110, border: "2px dashed #e2e8f0", borderRadius: 8, background: "#f8fafc", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6, cursor: "pointer", flexShrink: 0, overflow: "hidden" }}>
-                  {photoSrc
-                    ? <img src={photoSrc} alt="ID" style={{ width: "100%", height: "100%", objectFit: "cover" }}/>
-                    : <><svg width="24" height="24" fill="none" stroke="#94a3b8" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span style={{ fontSize: 10, color: "#94a3b8", textAlign: "center" }}>Click to upload</span></>
-                  }
-                  <input type="file" id="photoInput" accept="image/*" style={{ display: "none" }} onChange={handlePhoto}/>
-                </label>
-                <div>
-                  <p style={{ fontSize: 12, color: "#475569", lineHeight: 1.6, margin: 0 }}>Upload a recent 2×2 ID photo (white background preferred).</p>
-                  <ul style={{ fontSize: 11.5, color: "#94a3b8", paddingLeft: 16, marginTop: 6 }}>
-                    <li>JPG or PNG, max 2 MB</li>
-                    <li>Face must be clearly visible</li>
-                    <li>No sunglasses or hats</li>
-                    <li>Taken within the last 6 months</li>
-                  </ul>
-                </div>
-              </div>
-            )}
-
             {/* Basic Information */}
             <div style={s.sectionTitle}>Basic Information</div>
             <div style={{ ...s.grid3, marginBottom: 16 }}>
               <Field label="Last Name" required>
-                <input style={s.input} defaultValue={isContinuing ? "Regodo" : ""} placeholder={isContinuing ? "" : "Enter last name"}/>
+                <input style={s.input} value={currentUser.lastName} readOnly placeholder="Auto-filled from account"/>
               </Field>
               <Field label="First Name" required>
-                <input style={s.input} defaultValue={isContinuing ? "Ron" : ""} placeholder={isContinuing ? "" : "Enter first name"}/>
+                <input style={s.input} value={currentUser.firstName} readOnly placeholder="Auto-filled from account"/>
               </Field>
               <Field label="Middle Name">
-                <input style={s.input} defaultValue={isContinuing ? "Santos" : ""} placeholder={isContinuing ? "" : "Enter middle name"}/>
+                <input style={s.input} placeholder="Enter middle name"/>
               </Field>
               <Field label="Suffix">
                 <select style={s.select}><option>None</option><option>Jr.</option><option>Sr.</option><option>II</option><option>III</option></select>
               </Field>
               <Field label="Date of Birth" required>
-                <input type="date" style={s.input} defaultValue={isContinuing ? "2004-03-15" : ""}/>
+                <input type="date" style={s.input} placeholder="Select date"/>
               </Field>
               <Field label="Sex" required>
-                <select style={s.select}><option>Male</option><option>Female</option></select>
+                <select style={s.select}><option value="">Select...</option><option>Male</option><option>Female</option></select>
               </Field>
               <Field label="Civil Status">
-                <select style={s.select}><option>Single</option><option>Married</option><option>Widowed</option></select>
+                <select style={s.select}><option value="">Select...</option><option>Single</option><option>Married</option><option>Widowed</option></select>
               </Field>
               <Field label="Nationality" required>
-                <input style={s.input} defaultValue={isContinuing ? "Filipino" : ""} placeholder="e.g. Filipino"/>
+                <input style={s.input} placeholder="e.g. Filipino"/>
               </Field>
               <Field label="Religion">
                 <input style={s.input} placeholder="Optional"/>
@@ -251,22 +216,19 @@ export default function PersonalInformation({ onNext }) {
             <div style={s.sectionTitle}>Contact Details</div>
             <div style={{ ...s.grid2, marginBottom: 16 }}>
               <Field label="Email Address" required>
-                {isContinuing
-                  ? <input style={s.inputReadonly} readOnly defaultValue="ron.regodo@student.onlium.edu.ph"/>
-                  : <input style={s.input} placeholder="Enter your personal email address"/>
-                }
+                <input style={s.input} placeholder="Enter your personal email address"/>
               </Field>
               <Field label="Mobile Number" required>
-                <input type="tel" style={s.input} defaultValue={isContinuing ? "+63 912 345 6789" : ""} placeholder={isContinuing ? "" : "+63 9XX XXX XXXX"}/>
+                <input type="tel" style={s.input} placeholder="+63 9XX XXX XXXX"/>
               </Field>
               <Field label="Home Address" required colSpan>
-                <input style={s.input} defaultValue={isContinuing ? "123 Sampaguita St., Quezon City, Metro Manila" : ""} placeholder={isContinuing ? "" : "Street, City, Province"}/>
+                <input style={s.input} placeholder="Street, City, Province"/>
               </Field>
               <Field label="Province">
-                <input style={s.input} defaultValue={isContinuing ? "Metro Manila" : ""} placeholder={isContinuing ? "" : "Province"}/>
+                <input style={s.input} placeholder="Province"/>
               </Field>
               <Field label="ZIP Code">
-                <input style={s.input} defaultValue={isContinuing ? "1100" : ""} placeholder={isContinuing ? "" : "ZIP Code"}/>
+                <input style={s.input} placeholder="ZIP Code"/>
               </Field>
             </div>
 
@@ -274,16 +236,16 @@ export default function PersonalInformation({ onNext }) {
             <div style={s.sectionTitle}>Parent / Guardian</div>
             <div style={{ ...s.grid3, marginBottom: 16 }}>
               <Field label="Guardian Name" required>
-                <input style={s.input} defaultValue={isContinuing ? "Maria Regodo" : ""} placeholder={isContinuing ? "" : "Full name"}/>
+                <input style={s.input} placeholder="Full name"/>
               </Field>
               <Field label="Relationship" required>
-                <select style={s.select}><option>Mother</option><option>Father</option><option>Guardian</option></select>
+                <select style={s.select}><option value="">Select...</option><option>Mother</option><option>Father</option><option>Guardian</option></select>
               </Field>
               <Field label="Contact Number" required>
-                <input type="tel" style={s.input} defaultValue={isContinuing ? "+63 923 456 7890" : ""} placeholder={isContinuing ? "" : "+63 9XX XXX XXXX"}/>
+                <input type="tel" style={s.input} placeholder="+63 9XX XXX XXXX"/>
               </Field>
               <Field label="Guardian Address" colSpan>
-                <input style={s.input} defaultValue={isContinuing ? "Same as above" : ""} placeholder={isContinuing ? "" : "If different from student address"}/>
+                <input style={s.input} placeholder="If different from student address"/>
               </Field>
             </div>
 
@@ -316,31 +278,16 @@ export default function PersonalInformation({ onNext }) {
 
             {/* Academic Information */}
             <div style={s.sectionTitle}>Academic Information</div>
-            {isContinuing ? (
-              <div style={s.grid2}>
-                <Field label="Student ID">
-                  <input style={s.inputReadonly} readOnly defaultValue="ONLS-2025-00124"/>
-                </Field>
-                <Field label="Student Type">
-                  <input style={s.inputReadonly} readOnly defaultValue="Continuing Student"/>
-                </Field>
-                <Field label="Program" required>
-                  <input style={s.inputReadonly} readOnly defaultValue="BS Information Technology"/>
-                </Field>
-                <Field label="Year Level" required>
-                  <input style={s.inputReadonly} readOnly defaultValue="2nd Year"/>
-                </Field>
-              </div>
-            ) : (
-              <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10 }}>
-                <StudentTypeBadge type={studentType}/>
-                <p style={{ fontSize: 12.5, color: "#64748b", lineHeight: 1.5, margin: 0 }}>
-                  {studentType === "new"
-                    ? "Your Student ID, program, and year level will be automatically assigned after your enrollment is processed."
-                    : "Your Student ID and program placement will be determined after evaluation of your transfer credentials."}
-                </p>
-              </div>
-            )}
+            <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10 }}>
+              <StudentTypeBadge type={studentType}/>
+              <p style={{ fontSize: 12.5, color: "#64748b", lineHeight: 1.5, margin: 0 }}>
+                {studentType === "new"
+                  ? "Your Student ID, program, and year level will be automatically assigned after your enrollment is processed."
+                  : studentType === "transferee"
+                  ? "Your Student ID and program placement will be determined after evaluation of your transfer credentials."
+                  : "Your academic information will be verified and updated after enrollment submission."}
+              </p>
+            </div>
           </div>
 
           {/* Card Footer */}

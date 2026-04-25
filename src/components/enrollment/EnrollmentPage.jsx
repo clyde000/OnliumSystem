@@ -1,11 +1,11 @@
 import { useState } from "react";
-import StepsBar from "./StepsBar";
 import PersonalInformation from "./PersonalInformation";
 import UploadRequirements from "./UploadRequirements";
 import SelectProgram from "./SelectProgram";
-import UploadPicture from "./UploadPicture";
+import ChooseSchedule from "./ChooseSchedule";
 import SubmitRequirements from "./SubmitRequirements";
 import FinalizeEnrollment from "./FinalizeEnrollment";
+import StepsBar from "./StepsBar";
 
 export default function EnrollmentPage({ onScheduleSaved, onGoToStudyLoad }) {
   const [step, setStep] = useState(1);
@@ -19,14 +19,14 @@ export default function EnrollmentPage({ onScheduleSaved, onGoToStudyLoad }) {
 
   return (
     <div style={{ padding:"28px 32px", flex:1 }}>
-      <div style={{ marginBottom:24 }}>
+      <div style={{ marginBottom:12 }}>
         <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:20, fontWeight:700 }}>Enrollment</h1>
         <p style={{ fontSize:13, color:"#94a3b8", marginTop:2 }}>
           BS Information Technology — 2nd Year · {TYPE_LABEL[studentType]} · SY 2026
         </p>
       </div>
 
-      <StepsBar currentStep={step} />
+      <StepsBar currentStep={step} onStepClick={(n) => setStep(n)} />
 
       {/* Step 1 — Personal Information */}
       {step === 1 && (
@@ -43,9 +43,9 @@ export default function EnrollmentPage({ onScheduleSaved, onGoToStudyLoad }) {
         <SelectProgram onBack={() => setStep(2)} onNext={() => setStep(4)} />
       )}
 
-      {/* Step 4 — Upload Picture (white background 2×2) */}
+      {/* Step 4 — Choose Schedule */}
       {step === 4 && (
-        <UploadPicture onBack={() => setStep(3)} onNext={() => setStep(5)} />
+        <ChooseSchedule onBack={() => setStep(3)} onNext={() => setStep(5)} />
       )}
 
       {/* Step 5 — Submit Requirements → admin review */}

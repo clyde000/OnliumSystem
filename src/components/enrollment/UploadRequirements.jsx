@@ -57,34 +57,10 @@ const DOCS_BY_TYPE = {
       critical: false,
     },
     {
-      id: "good_moral",
-      label: "Certificate of Good Moral",
-      desc: "Issued by your previous school's guidance office.",
-      emoji: "📜",
-      required: true,
-      critical: false,
-    },
-    {
       id: "honorable_dismissal",
       label: "Honorable Dismissal",
       desc: "Official honorable dismissal document from your previous school.",
       emoji: "🎓",
-      required: true,
-      critical: false,
-    },
-    {
-      id: "psa",
-      label: "PSA Birth Certificate",
-      desc: "Philippine Statistics Authority issued birth certificate.",
-      emoji: "🪪",
-      required: true,
-      critical: false,
-    },
-    {
-      id: "photo",
-      label: "2×2 ID Photo (white bg)",
-      desc: "Clear photo with white background taken within the last 6 months.",
-      emoji: "🖼️",
       required: true,
       critical: false,
     },
@@ -187,50 +163,32 @@ export default function UploadRequirements({ studentType = "continuing", onBack,
         </div>
 
         {/* Document cards */}
-        <div style={{ display: "grid", gridTemplateColumns: docs.length <= 2 ? "1fr 1fr" : "1fr 1fr", gap: 16 }}>
-          {docs.map(({ id, label, desc, emoji, required, critical, note }) => {
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          {docs.map(({ id, label, required }) => {
             const done = !!uploaded[id];
             return (
               <label key={id} htmlFor={`file-${id}`} style={{
-                border: done
-                  ? "1.5px solid #16a34a"
-                  : critical && !done
-                    ? "2px dashed #fca5a5"
-                    : "1.5px dashed #e2e8f0",
-                borderRadius: 12, padding: 20, textAlign: "center",
-                cursor: "pointer", display: "block", transition: "all .2s",
-                background: done ? "#f0fdf4" : critical && !done ? "#fef2f2" : "#fff",
+                border: "1.5px solid #e2e8f0",
+                borderRadius: 12, padding: 24, textAlign: "center",
+                cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                transition: "all .2s", background: "#fff", minHeight: 140,
               }}>
                 <input type="file" id={`file-${id}`} accept=".pdf,.jpg,.png" style={{ display: "none" }} onChange={e => handleFile(id, e)}/>
 
-                {/* Icon */}
-                <div style={{ width: 52, height: 52, borderRadius: 14, margin: "0 auto 12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, background: done ? "#dcfce7" : critical && !done ? "#fee2e2" : "#f8fafc" }}>
-                  {done ? "✅" : emoji}
+                {/* Status badge */}
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: .5, color: "#dc2626", marginBottom: 12 }}>
+                  Required
                 </div>
 
-                {/* Badges */}
-                <div style={{ display: "flex", justifyContent: "center", gap: 6, marginBottom: 10 }}>
-                  <span style={{ display: "inline-block", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 20, textTransform: "uppercase", letterSpacing: .5, background: done ? "#dcfce7" : required ? (critical ? "#fee2e2" : "#fee2e2") : "#f1f5f9", color: done ? "#16a34a" : required ? (critical ? "#dc2626" : "#dc2626") : "#475569" }}>
-                    {done ? "Uploaded" : required ? (critical ? "⚠ Required" : "Required") : "Optional"}
-                  </span>
-                  {critical && !done && (
-                    <span style={{ display: "inline-block", fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 20, background: "#dc2626", color: "#fff", letterSpacing: .5 }}>CLEARANCE</span>
-                  )}
-                </div>
+                {/* Label */}
+                <h4 style={{ fontSize: 13.5, fontWeight: 700, marginBottom: 16, color: "#1e293b", margin: 0 }}>{label}</h4>
 
-                <h4 style={{ fontSize: 13.5, fontWeight: 700, marginBottom: 6, color: done ? "#166534" : "#1e293b" }}>{label}</h4>
-                <p style={{ fontSize: 11.5, color: "#94a3b8", lineHeight: 1.5 }}>{desc}</p>
-                {note && !done && (
-                  <p style={{ fontSize: 11, color: "#d97706", marginTop: 6, fontStyle: "italic" }}>💡 {note}</p>
-                )}
-
-                {/* Status */}
-                <div style={{ marginTop: 12, fontSize: 11.5, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, color: done ? "#16a34a" : required ? "#dc2626" : "#94a3b8" }}>
-                  {done ? (
-                    <><svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>{uploaded[id].length > 28 ? uploaded[id].substring(0, 25) + "…" : uploaded[id]}</>
-                  ) : (
-                    <><svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>{required ? "Not yet uploaded" : "Optional — not uploaded"}</>
-                  )}
+                {/* Status indicator */}
+                <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 600, color: "#dc2626" }}>
+                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                    <circle cx="12" cy="12" r="10"/>
+                  </svg>
+                  {done ? uploaded[id] : "Not yet uploaded"}
                 </div>
               </label>
             );

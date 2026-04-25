@@ -9,3 +9,26 @@
 .bulletin-item:last-child {
   border-bottom: none;
 }
+
+.bulletin-note {
+  padding: 12px;
+  border-radius: 10px;
+  background: #f8fafc;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.bulletin-note.info {
+  border-left: 4px solid #60a5fa;
+  background: #f1f8ff;
+}
+
+.bulletin-note.warning {
+  border-left: 4px solid #f59e0b;
+  background: #fffaf0;
+}
+
+.bulletin-note.success {
+  border-left: 4px solid #10b981;
+  background: #ecfdf5;
+}

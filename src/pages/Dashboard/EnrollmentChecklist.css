@@ -1,7 +1,7 @@
 .card {
   background: #fff;
   border-radius: 14px;
-  border: 1px solid #e8edf4;
+  border: 1px solid rgba(15,23,42,0.04);
   padding: 20px;
 }
 
@@ -16,7 +16,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 0;
+  padding: 12px 0;
   border-bottom: 1px solid #f1f5f9;
 }
 
@@ -36,6 +36,21 @@
   border-radius: 20px;
 }
 
-.status-done    { background: #eaf3de; color: #3b6d11; }
-.status-pending { background: #faeeda; color: #854f0b; }
-.status-locked  { background: #eeedfe; color: #534ab7; }
+.status-done    { background: #ecfdf5; color: #065f46; }
+.status-pending { background: #fff7ed; color: #92400e; }
+.status-locked  { background: #eef2ff; color: #4338ca; }
+
+.continue-link {
+  background: #2563eb;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}

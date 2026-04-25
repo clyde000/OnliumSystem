@@ -23,73 +23,16 @@ const SUMMARY_ROWS = [
 ];
 
 export default function SubmitRequirements({ onBack, onNext }) {
-  const [checked,     setChecked]     = useState({});
   const [submitting,  setSubmitting]  = useState(false);
-  const [submitted,   setSubmitted]   = useState(false);
-
-  const allChecked = CHECKLIST.every(c => checked[c.id]);
-
-  function toggle(id) {
-    setChecked(prev => ({ ...prev, [id]: !prev[id] }));
-  }
+  const [confirmAll, setConfirmAll] = useState(false);
+  const [confirmPending, setConfirmPending] = useState(false);
 
   function handleSubmit() {
-    if (!allChecked) return;
     setSubmitting(true);
-    setTimeout(() => { setSubmitting(false); setSubmitted(true); }, 1800);
+    setTimeout(() => { setSubmitting(false); if (onNext) onNext(); }, 1800);
   }
 
-  // ── Submitted / pending admin review state ──
-  if (submitted) {
-    return (
-      <div style={{ background:"#fff", border:"1px solid #e2e8f0", borderRadius:12, boxShadow:"0 1px 3px rgba(0,0,0,.08)", overflow:"hidden" }}>
-        <div style={{ padding:48, textAlign:"center" }}>
-          {/* Animated pending icon */}
-          <div style={{ width:80, height:80, borderRadius:"50%", background:"#fffbeb", border:"3px solid #fcd34d", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 20px", fontSize:36 }}>
-            ⏳
-          </div>
-          <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:20, fontWeight:700, marginBottom:8 }}>Requirements Submitted!</h2>
-          <p style={{ fontSize:13.5, color:"#64748b", maxWidth:440, margin:"0 auto 24px", lineHeight:1.6 }}>
-            Your enrollment requirements have been sent for <strong>Admin Review</strong>. Please wait while your documents are being verified. You will be notified once approved.
-          </p>
-
-          {/* Status timeline */}
-          <div style={{ maxWidth:400, margin:"0 auto 28px", textAlign:"left" }}>
-            {[
-              { label:"Requirements Submitted",    note:"Your documents have been sent",        done:true,    icon:"✅" },
-              { label:"Under Admin Review",         note:"Documents are being verified",          active:true,  icon:"🔍" },
-              { label:"Approval / Feedback",        note:"You will receive a notification",       done:false,   icon:"📩" },
-              { label:"Proceed to Payment",         note:"Appoint payment at the Cashier",        done:false,   icon:"💳" },
-            ].map((s, i) => (
-              <div key={i} style={{ display:"flex", gap:14, marginBottom: i < 3 ? 0 : 0, position:"relative" }}>
-                {/* line */}
-                {i < 3 && <div style={{ position:"absolute", left:19, top:36, width:2, height:32, background: s.done ? "#16a34a" : "#e2e8f0" }}/>}
-                <div style={{ width:40, height:40, borderRadius:"50%", background: s.done ? "#f0fdf4" : s.active ? "#fffbeb" : "#f8fafc", border:`2px solid ${s.done ? "#16a34a" : s.active ? "#f59e0b" : "#e2e8f0"}`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:16 }}>
-                  {s.icon}
-                </div>
-                <div style={{ paddingBottom:24 }}>
-                  <div style={{ fontSize:13, fontWeight:700, color: s.done ? "#16a34a" : s.active ? "#d97706" : "#94a3b8" }}>{s.label}</div>
-                  <div style={{ fontSize:11.5, color:"#94a3b8", marginTop:2 }}>{s.note}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ display:"inline-flex", padding:"10px 20px", background:"#fffbeb", border:"1.5px solid #fcd34d", borderRadius:8, fontSize:12.5, color:"#92400e", gap:8, alignItems:"center", marginBottom:24 }}>
-            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-            Pending requirements will be followed up by the admin.
-          </div>
-
-          <div>
-            <button onClick={onNext} style={{ padding:"12px 28px", borderRadius:8, fontSize:14, fontWeight:700, cursor:"pointer", background:"#2563eb", border:"none", color:"#fff", display:"inline-flex", alignItems:"center", gap:8 }}>
-              Continue to Appoint Payment
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  
 
   return (
     <div style={{ background:"#fff", border:"1px solid #e2e8f0", borderRadius:12, boxShadow:"0 1px 3px rgba(0,0,0,.08)", overflow:"hidden" }}>
@@ -113,84 +56,71 @@ export default function SubmitRequirements({ onBack, onNext }) {
           </p>
         </div>
 
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:24 }}>
-          {/* Summary */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 24 }}>
           <div>
             <div style={{ fontSize:11, fontWeight:700, letterSpacing:1, textTransform:"uppercase", color:"#2563eb", marginBottom:14, paddingBottom:6, borderBottom:"1px solid #eff6ff" }}>
               Enrollment Summary
             </div>
             <div style={{ border:"1px solid #e2e8f0", borderRadius:10, overflow:"hidden" }}>
               {SUMMARY_ROWS.map((row, i) => (
-                <div key={row.label} style={{ display:"flex", justifyContent:"space-between", padding:"10px 16px", background: i % 2 === 0 ? "#f8fafc" : "#fff", borderBottom: i < SUMMARY_ROWS.length - 1 ? "1px solid #f1f5f9" : "none" }}>
+                <div key={row.label} style={{ display:"flex", justifyContent:"space-between", padding:"12px 16px", background: i % 2 === 0 ? "#f8fafc" : "#fff", borderBottom: i < SUMMARY_ROWS.length - 1 ? "1px solid #f1f5f9" : "none" }}>
                   <span style={{ fontSize:12, color:"#64748b" }}>{row.label}</span>
                   <span style={{ fontSize:12, fontWeight:600 }}>{row.value}</span>
                 </div>
               ))}
             </div>
 
-            {/* What happens next */}
-            <div style={{ marginTop:16, padding:"14px 16px", background:"#f0fdf4", border:"1px solid #86efac", borderRadius:10 }}>
-              <div style={{ fontSize:11, fontWeight:700, letterSpacing:.8, textTransform:"uppercase", color:"#16a34a", marginBottom:10 }}>After You Submit</div>
-              {[
-                { icon:"🔍", text:"Admin reviews your documents and photo" },
-                { icon:"📩", text:"You'll receive a notification once approved" },
-                { icon:"💳", text:"Proceed to appoint an initial payment slot" },
-              ].map((s, i) => (
-                <div key={i} style={{ display:"flex", gap:8, marginBottom:i < 2 ? 8 : 0, alignItems:"center" }}>
-                  <span style={{ fontSize:16 }}>{s.icon}</span>
-                  <span style={{ fontSize:12, color:"#166534" }}>{s.text}</span>
-                </div>
-              ))}
+            {/* Confirmation Checklist */}
+            <div style={{ marginTop:18 }}>
+              <div style={{ fontSize:13, fontWeight:700, marginBottom:8 }}>Confirmation Checklist</div>
+              <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                <label style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 14px", borderRadius:8, background:"#fff", border:"1px solid #eef2f6" }}>
+                  <input type="checkbox" checked={confirmAll} onChange={e => setConfirmAll(e.target.checked)} />
+                  <div style={{ fontSize:13, color:"#0f172a" }}>I confirm that all my information and uploaded documents are accurate</div>
+                </label>
+
+                <label style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 14px", borderRadius:8, background:"#fff", border:"1px solid #eef2f6" }}>
+                  <input type="checkbox" checked={confirmPending} onChange={e => setConfirmPending(e.target.checked)} />
+                  <div style={{ fontSize:13, color:"#0f172a" }}>I understand that my enrollment is pending admin approval</div>
+                </label>
+              </div>
             </div>
           </div>
 
-          {/* Checklist */}
-          <div>
-            <div style={{ fontSize:11, fontWeight:700, letterSpacing:1, textTransform:"uppercase", color:"#2563eb", marginBottom:14, paddingBottom:6, borderBottom:"1px solid #eff6ff" }}>
-              Confirmation Checklist
+          <aside>
+            <div style={{ padding:18, borderRadius:10, background:"#f1f8ff", border:"1px solid #dbeafe" }}>
+              <div style={{ fontSize:15, fontWeight:700, marginBottom:8 }}>After You Submit</div>
+              <ol style={{ paddingLeft:18, margin:0 }}>
+                <li style={{ marginBottom:8 }}><strong>Admin reviews your documents</strong><div style={{ fontSize:12, color:"#64748b" }}>Verification in progress</div></li>
+                <li style={{ marginBottom:8 }}><strong>Receive notification</strong><div style={{ fontSize:12, color:"#64748b" }}>We will inform you of approval</div></li>
+                <li><strong>Schedule payment</strong><div style={{ fontSize:12, color:"#64748b" }}>Proceed to appoint payment to complete enrollment</div></li>
+              </ol>
             </div>
-            <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-              {CHECKLIST.map(item => (
-                <div
-                  key={item.id}
-                  onClick={() => toggle(item.id)}
-                  style={{ display:"flex", gap:12, padding:"11px 14px", border:`1.5px solid ${checked[item.id] ? "#86efac" : "#e2e8f0"}`, borderRadius:8, cursor:"pointer", background: checked[item.id] ? "#f0fdf4" : "#fff", transition:"all .2s" }}
-                >
-                  <div style={{ width:20, height:20, borderRadius:5, border:`2px solid ${checked[item.id] ? "#16a34a" : "#e2e8f0"}`, background: checked[item.id] ? "#16a34a" : "#fff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginTop:1, transition:"all .2s" }}>
-                    {checked[item.id] && <svg width="10" height="10" fill="none" stroke="#fff" strokeWidth="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>}
-                  </div>
-                  <div>
-                    <div style={{ fontSize:12.5, fontWeight:600, lineHeight:1.4, color: checked[item.id] ? "#166534" : "#1e293b" }}>{item.label}</div>
-                    <div style={{ fontSize:11, color:"#94a3b8", marginTop:3 }}>{item.note}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ marginTop:14, padding:"12px 14px", background: allChecked ? "#f0fdf4" : "#f8fafc", border:`1px solid ${allChecked ? "#86efac" : "#e2e8f0"}`, borderRadius:8, fontSize:12, color: allChecked ? "#166534" : "#64748b", textAlign:"center", fontWeight:600, transition:"all .2s" }}>
-              {allChecked ? "✓ All items confirmed — ready to submit!" : `${CHECKLIST.filter(c => !checked[c.id]).length} item(s) left to confirm`}
-            </div>
-          </div>
+          </aside>
         </div>
       </div>
 
       {/* Footer */}
       <div style={{ padding:"16px 24px", borderTop:"1px solid #f1f5f9", display:"flex", alignItems:"center", justifyContent:"space-between", background:"#f8fafc" }}>
-        <button onClick={onBack} style={{ padding:"10px 22px", borderRadius:8, fontSize:13.5, fontWeight:600, cursor:"pointer", background:"#fff", border:"1.5px solid #e2e8f0", color:"#475569", display:"flex", alignItems:"center", gap:8 }}>
-          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
-          Back
-        </button>
-        <button
-          onClick={handleSubmit}
-          disabled={!allChecked || submitting}
-          style={{ padding:"10px 22px", borderRadius:8, fontSize:13.5, fontWeight:600, cursor: allChecked && !submitting ? "pointer" : "not-allowed", background: allChecked ? "#2563eb" : "#93c5fd", border:"none", color:"#fff", display:"flex", alignItems:"center", gap:8, opacity: allChecked ? 1 : .7 }}
-        >
-          {submitting ? (
-            <><svg style={{ animation:"spin 1s linear infinite" }} width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>Submitting…</>
-          ) : (
-            <>Submit for Admin Review<svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></>
-          )}
-        </button>
+        <div>
+          <button onClick={onBack} style={{ padding:"10px 18px", borderRadius:8, background:"#fff", border:"1.5px solid #e2e8f0", color:"#475569", fontWeight:600, cursor:"pointer" }}>
+            ← Back
+          </button>
+        </div>
+
+        <div>
+          <button
+            onClick={handleSubmit}
+            disabled={submitting || !(confirmAll && confirmPending)}
+            style={{ padding:"10px 22px", borderRadius:8, fontSize:13.5, fontWeight:600, cursor: submitting || !(confirmAll && confirmPending) ? "not-allowed" : "pointer", background: (confirmAll && confirmPending) ? "#2563eb" : "#cbd5e1", border:"none", color:(confirmAll && confirmPending) ? "#fff" : "#9aa5b2", display:"flex", alignItems:"center", gap:8, opacity: submitting ? .7 : 1 }}
+          >
+            {submitting ? (
+              <><svg style={{ animation:"spin 1s linear infinite" }} width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>Submitting…</>
+            ) : (
+              <>Next: Finalize Enrollment<svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></>
+            )}
+          </button>
+        </div>
       </div>
       <style>{`@keyframes spin { to { transform:rotate(360deg); } }`}</style>
     </div>

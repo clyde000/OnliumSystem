@@ -1,7 +1,7 @@
 .quick-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+  gap: 18px;
   margin-bottom: 24px;
 }
 
@@ -10,38 +10,43 @@
   border-radius: 12px;
   padding: 16px;
   cursor: pointer;
-  border: 1px solid #e8edf4;
+  border: 1px solid #eef2f7;
   transition: box-shadow 0.15s, transform 0.1s;
+  min-height: 84px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .quick-card:hover {
-  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.1);
-  transform: translateY(-1px);
+  box-shadow: 0 10px 30px rgba(37,99,235,0.12);
+  transform: translateY(-4px);
 }
 
 .qc-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 9px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 10px;
+  font-size: 18px;
 }
 
-.qc-icon.blue   { background: #e3f0fb; }
-.qc-icon.teal   { background: #e1f5ee; }
-.qc-icon.amber  { background: #faeeda; }
-.qc-icon.purple { background: #eeedfe; }
+.qc-icon.blue   { background: #e9f2ff; color: #1e40af }
+.qc-icon.teal   { background: #ecfbf6; color: #065f46 }
+.qc-icon.amber  { background: #fff8f1; color: #92400e }
+.qc-icon.purple { background: #f5f3ff; color: #4c1d95 }
 
 .qc-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 2px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
 }
 
 .qc-sub {
-  font-size: 11px;
-  color: #94a3b8;
+  font-size: 12px;
+  color: #64748b;
 }

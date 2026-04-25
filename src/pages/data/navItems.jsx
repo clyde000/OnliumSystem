@@ -17,7 +17,7 @@ export const NAV_ITEMS = [
         <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
       </svg>
     ),
-    badge: 1,
+    badge: null,
     to: "/enrollment",
   },
   {
@@ -28,6 +28,7 @@ export const NAV_ITEMS = [
       </svg>
     ),
     badge: null,
+    to: "/student/studyload",
   },
   {
     label: "Resources",
@@ -37,6 +38,7 @@ export const NAV_ITEMS = [
       </svg>
     ),
     badge: null,
+    to: "/student/resources",
   },
   {
     label: "Appointments",
@@ -46,6 +48,7 @@ export const NAV_ITEMS = [
       </svg>
     ),
     badge: null,
+    to: "/student/appointments",
   },
   {
     label: "Notifications",
@@ -54,6 +57,7 @@ export const NAV_ITEMS = [
         <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
       </svg>
     ),
-    badge: 4,
+    badge: null,
+    to: "/student/notifications",
   },
 ];

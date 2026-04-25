@@ -10,11 +10,6 @@ export default function Sidebar({ activeNav, onNavChange }) {
     if (item.to) navigate(item.to);
   }
 
-  function handleLogout() {
-    localStorage.removeItem('onlium_current_user');
-    navigate('/');
-  }
-
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
@@ -50,7 +45,7 @@ export default function Sidebar({ activeNav, onNavChange }) {
       </nav>
 
       <div className="sidebar-spacer" />
-      <button className="logout-btn" onClick={handleLogout}>Logout</button>
+      <div className="logout-btn">Logout</div>
     </aside>
   );
 }

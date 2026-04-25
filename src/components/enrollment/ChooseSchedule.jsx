@@ -1,189 +1,339 @@
 import { useState } from "react";
 
-const SUBJECTS = [];
-
-const TYPE_COLOR = { Lecture:"#2563eb", "Lecture / Lab":"#7c3aed", Activity:"#16a34a", Service:"#d97706" };
-
-const SHIFTS = [
-  { key:"morning",   label:"Morning",     icon:"🌅", desc:"Sections starting before 12:00 PM" },
-  { key:"afternoon", label:"Afternoon",   icon:"☀️",  desc:"Sections starting 12:00 PM – 5:00 PM" },
-  { key:"evening",   label:"Evening",     icon:"🌙", desc:"Sections starting after 5:00 PM" },
+const schedules = [
+  {
+    key: "morning",
+    label: "Morning",
+    time: "6:00 AM – 12:00 PM",
+    icon: (
+      <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+      </svg>
+    ),
+    accent: "#f59e0b",
+    bg: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)",
+    border: "#fcd34d",
+    tag: "Most Popular",
+    tagColor: "#92400e",
+    tagBg: "#fef3c7",
+    desc: "Ideal for students who prefer early classes and free afternoons.",
+  },
+  {
+    key: "afternoon",
+    label: "Afternoon",
+    time: "12:00 PM – 6:00 PM",
+    icon: (
+      <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        <path d="M2 17h20" strokeOpacity=".3"/>
+      </svg>
+    ),
+    accent: "#2563eb",
+    bg: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)",
+    border: "#93c5fd",
+    tag: null,
+    desc: "Flexible midday schedule with balanced morning and evening time.",
+  },
+  {
+    key: "evening",
+    label: "Evening",
+    time: "6:00 PM – 10:00 PM",
+    icon: (
+      <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.6" viewBox="0 0 24 24">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    ),
+    accent: "#7c3aed",
+    bg: "linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)",
+    border: "#c4b5fd",
+    tag: "Working Students",
+    tagColor: "#4c1d95",
+    tagBg: "#ede9fe",
+    desc: "Perfect for students with daytime work or personal commitments.",
+  },
 ];
 
-export default function ChooseSchedule({ onBack, onNext }) {
-  const [picks,    setPicks]    = useState({});
-  const [expanded, setExpanded] = useState("cc101");
-  const [shift,    setShift]    = useState("morning");
+export default function ChooseSchedule({ onNext, onBack }) {
+  const [selected, setSelected] = useState(null);
+  const [error, setError] = useState(false);
+  const [photoSrc, setPhotoSrc] = useState(null);
+  const [photoName, setPhotoName] = useState("");
 
-  const allPicked  = SUBJECTS.every(s => picks[s.id]);
-  const totalUnits = SUBJECTS.reduce((sum, s) => picks[s.id] ? sum + s.units : sum, 0);
-
-  function pick(subjectId, sectionId) {
-    setPicks(prev => ({ ...prev, [subjectId]: sectionId }));
+  function handleNext() {
+    if (!selected) {
+      setError(true);
+      return;
+    }
+    setError(false);
+    onNext && onNext(selected);
   }
 
-  // Filter sections by chosen shift (always show picked section even if filtered out)
-  function visibleSections(subj) {
-    return subj.sections.filter(sec => sec.shift === shift || picks[subj.id] === sec.id);
+  function handleSelect(key) {
+    setSelected(key);
+    setError(false);
+  }
+
+  function handlePhoto(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => setPhotoSrc(ev.target.result);
+    reader.readAsDataURL(file);
+    setPhotoName(file.name);
+  }
+
+  function removePhoto() {
+    setPhotoSrc(null);
+    setPhotoName("");
   }
 
   return (
-    <div style={{ background:"#fff", border:"1px solid #e2e8f0", borderRadius:12, boxShadow:"0 1px 3px rgba(0,0,0,.08)", overflow:"hidden" }}>
-      {/* Header */}
-      <div style={{ padding:"20px 24px 16px", borderBottom:"1px solid #f1f5f9", display:"flex", alignItems:"center", gap:12 }}>
-        <div style={{ width:40, height:40, borderRadius:10, background:"#eff6ff", display:"flex", alignItems:"center", justifyContent:"center", color:"#2563eb", flexShrink:0 }}>
-          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        </div>
-        <div>
-          <div style={{ fontFamily:"'Sora',sans-serif", fontSize:15, fontWeight:700 }}>Choose Schedule</div>
-          <div style={{ fontSize:12, color:"#94a3b8", marginTop:2 }}>Select your preferred shift, then pick a section for each subject</div>
-        </div>
-        {/* Units pill */}
-        <div style={{ marginLeft:"auto", background: allPicked ? "#dcfce7" : "#eff6ff", border:`1px solid ${allPicked ? "#86efac" : "#bfdbfe"}`, borderRadius:20, padding:"6px 14px", textAlign:"center" }}>
-          <div style={{ fontSize:18, fontWeight:700, color: allPicked ? "#16a34a" : "#2563eb", lineHeight:1 }}>{totalUnits}</div>
-          <div style={{ fontSize:10, color:"#64748b" }}>Total Units</div>
-        </div>
-      </div>
+    <div style={{
+      fontFamily: "'DM Sans', sans-serif",
+      background: "#f1f5f9",
+      minHeight: "100vh",
+      padding: "32px 0",
+    }}>
+      <div style={{ maxWidth: 860, margin: "0 auto", padding: "0 16px" }}>
 
-      <div style={{ padding:24 }}>
+        {/* Card */}
+        <div style={{
+          background: "#fff",
+          border: "1px solid #e2e8f0",
+          borderRadius: 16,
+          boxShadow: "0 2px 12px rgba(0,0,0,.07)",
+          overflow: "hidden",
+        }}>
 
-        {/* ── Shift Preference Selector ── */}
-        <div style={{ fontSize:11, fontWeight:700, letterSpacing:1, textTransform:"uppercase", color:"#2563eb", marginBottom:12, paddingBottom:6, borderBottom:"1px solid #eff6ff" }}>
-          Preferred Schedule Shift
-        </div>
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:10, marginBottom:20 }}>
-          {SHIFTS.map(({ key, label, icon, desc }) => {
-            const active = shift === key;
-            return (
-              <button
-                key={key}
-                onClick={() => setShift(key)}
-                style={{
-                  padding:"12px 14px", borderRadius:10, cursor:"pointer", textAlign:"left",
-                  border: active ? "2px solid #2563eb" : "1.5px solid #e2e8f0",
-                  background: active ? "#eff6ff" : "#fff",
-                  outline:"none", transition:"all .15s",
-                }}
-              >
-                <div style={{ fontSize:20, marginBottom:6 }}>{icon}</div>
-                <div style={{ fontSize:13, fontWeight:700, color: active ? "#2563eb" : "#1e293b", marginBottom:2 }}>{label}</div>
-                <div style={{ fontSize:11, color:"#94a3b8", lineHeight:1.4 }}>{desc}</div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Progress */}
-        <div style={{ background:"#f8fafc", border:"1px solid #e2e8f0", borderRadius:8, padding:"12px 18px", display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20 }}>
-          <div style={{ fontSize:13 }}>
-            <span style={{ fontWeight:700, fontSize:20, color:"#2563eb", marginRight:6 }}>{Object.keys(picks).length}</span>
-            of <strong>{SUBJECTS.length}</strong> subjects with a selected section
+          {/* Header */}
+          <div style={{
+            padding: "24px 28px 20px",
+            borderBottom: "1px solid #f1f5f9",
+            display: "flex",
+            alignItems: "center",
+            gap: 14,
+          }}>
+            <div style={{
+              width: 44, height: 44, borderRadius: 12,
+              background: "#eef2ff",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "#2563eb", flexShrink: 0,
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6)"
+            }}>
+              <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+            <div>
+              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 17, fontWeight: 800, color: "#0f172a" }}>
+                Choose your schedule
+              </div>
+              <div style={{ fontSize: 12.5, color: "#64748b", marginTop: 3 }}>
+                Select a class time that works best for you. You can only enroll in one schedule per term.
+              </div>
+            </div>
           </div>
-          <div style={{ display:"flex", gap:6 }}>
-            {SUBJECTS.map(s => (
-              <div key={s.id} style={{ width:10, height:10, borderRadius:"50%", background: picks[s.id] ? "#16a34a" : "#e2e8f0", transition:"background .2s" }}/>
-            ))}
-          </div>
-        </div>
 
-        {/* Accordion */}
-        <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-          {SUBJECTS.map(subj => {
-            const isOpen    = expanded === subj.id;
-            const pickedSec = subj.sections.find(s => s.id === picks[subj.id]);
-            const tc        = TYPE_COLOR[subj.type] || "#64748b";
-            const secs      = visibleSections(subj);
-            return (
-              <div key={subj.id} style={{ border: pickedSec ? "1.5px solid #86efac" : "1.5px solid #e2e8f0", borderRadius:10, overflow:"hidden", transition:"border-color .2s" }}>
-                {/* Accordion header */}
-                <div
-                  onClick={() => setExpanded(isOpen ? null : subj.id)}
-                  style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 18px", cursor:"pointer", background: isOpen ? "#f8fafc" : "#fff" }}
-                >
-                  <div style={{ width:36, height:36, borderRadius:8, background:`${tc}18`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                    <svg width="16" height="16" fill="none" stroke={tc} strokeWidth="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                  </div>
-                  <div style={{ flex:1 }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                      <span style={{ fontWeight:700, fontSize:13, color:tc }}>{subj.code}</span>
-                      <span style={{ fontSize:12.5, fontWeight:600 }}>{subj.title}</span>
-                    </div>
-                    <div style={{ fontSize:11, color:"#94a3b8", marginTop:2 }}>{subj.units} units · {subj.type}</div>
-                  </div>
-                  {pickedSec
-                    ? <span style={{ fontSize:11.5, color:"#16a34a", fontWeight:600, background:"#dcfce7", padding:"3px 10px", borderRadius:20 }}>✓ {pickedSec.label} — {pickedSec.time}</span>
-                    : <span style={{ fontSize:11, color:"#dc2626", background:"#fee2e2", padding:"3px 10px", borderRadius:20, fontWeight:600 }}>Not selected</span>
-                  }
-                  <svg style={{ transform: isOpen ? "rotate(180deg)" : "none", transition:"transform .2s", flexShrink:0, color:"#94a3b8" }} width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
-                </div>
+          {/* Body */}
+          <div style={{ padding: "24px 28px 28px" }}>
 
-                {/* Sections */}
-                {isOpen && (
-                  <div style={{ borderTop:"1px solid #f1f5f9", padding:"14px 18px", display:"flex", flexDirection:"column", gap:10 }}>
-                    {secs.length === 0 && (
-                      <div style={{ fontSize:12, color:"#94a3b8", textAlign:"center", padding:"16px 0" }}>
-                        No {shift} sections available for this subject.
+            {/* Error Banner */}
+            {error && (
+              <div style={{
+                display: "flex", alignItems: "center", gap: 10,
+                background: "#fff7ed", border: "1px solid #fed7aa",
+                borderRadius: 10, padding: "12px 16px", marginBottom: 24,
+              }}>
+                <svg width="16" height="16" fill="none" stroke="#ea580c" strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <span style={{ fontSize: 13, color: "#9a3412", fontWeight: 500 }}>
+                  Please select a schedule before continuing.
+                </span>
+              </div>
+            )}
+
+            {/* Schedule Cards */}
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: 18,
+              marginBottom: 32,
+            }}>
+              {schedules.map(({ key, label, time, icon, accent, bg, border, tag, tagColor, tagBg, desc }) => {
+                const isSelected = selected === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => handleSelect(key)}
+                    style={{
+                      position: "relative",
+                      padding: "28px 20px 26px",
+                      borderRadius: 12,
+                      cursor: "pointer",
+                      textAlign: "center",
+                      border: isSelected ? `2px solid ${accent}` : "1px solid #eef2f6",
+                      background: isSelected ? bg : "#fff",
+                      boxShadow: isSelected
+                        ? `0 8px 24px ${accent}14`
+                        : "0 4px 12px rgba(18,24,40,0.03)",
+                      transition: "all .2s ease",
+                      outline: "none",
+                      fontFamily: "'DM Sans', sans-serif",
+                    }}
+                  >
+                    {/* Tag */}
+                    {tag && (
+                      <div style={{
+                        position: "absolute", top: 12, right: 12,
+                        fontSize: 10, fontWeight: 700, letterSpacing: 0.4,
+                        padding: "3px 8px", borderRadius: 20,
+                        background: isSelected ? tagBg : "#f1f5f9",
+                        color: isSelected ? tagColor : "#94a3b8",
+                        transition: "all .2s",
+                      }}>
+                        {tag}
                       </div>
                     )}
-                    {secs.map(sec => {
-                      const isSel  = picks[subj.id] === sec.id;
-                      const isFull = sec.slots === 0;
-                      const shiftIcon = { morning:"🌅", afternoon:"☀️", evening:"🌙" }[sec.shift] || "";
-                      return (
-                        <div
-                          key={sec.id}
-                          onClick={() => !isFull && pick(subj.id, sec.id)}
-                          style={{
-                            border: isSel ? "2px solid #2563eb" : "1.5px solid #e2e8f0",
-                            borderRadius:8, padding:"12px 14px", cursor: isFull ? "not-allowed" : "pointer",
-                            background: isSel ? "#eff6ff" : "#fff", opacity: isFull ? .5 : 1,
-                            display:"flex", alignItems:"center", gap:14, transition:"all .2s",
-                          }}
-                        >
-                          {/* Radio dot */}
-                          <div style={{ width:18, height:18, borderRadius:"50%", border:`2px solid ${isSel ? "#2563eb" : "#e2e8f0"}`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, background: isSel ? "#2563eb" : "#fff" }}>
-                            {isSel && <div style={{ width:8, height:8, borderRadius:"50%", background:"#fff" }}/>}
-                          </div>
-                          <div style={{ flex:1 }}>
-                            <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:2 }}>
-                              <span style={{ fontSize:13, fontWeight:600 }}>{sec.label}</span>
-                              <span style={{ fontSize:10, padding:"1px 6px", borderRadius:20, background:"#f1f5f9", color:"#64748b" }}>{shiftIcon} {sec.shift}</span>
-                            </div>
-                            <div style={{ fontSize:11.5, color:"#64748b", marginTop:2 }}>
-                              <span style={{ fontWeight:600 }}>{sec.sched}</span> · {sec.time} · {sec.room}
-                            </div>
-                            <div style={{ fontSize:11, color:"#94a3b8", marginTop:1 }}>{sec.instructor}</div>
-                          </div>
-                          <div style={{ textAlign:"right", flexShrink:0 }}>
-                            <div style={{ fontSize:11, fontWeight:700, color: isFull ? "#dc2626" : sec.slots <= 5 ? "#d97706" : "#16a34a" }}>
-                              {isFull ? "FULL" : `${sec.slots} slots`}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
 
-      {/* Footer */}
-      <div style={{ padding:"16px 24px", borderTop:"1px solid #f1f5f9", display:"flex", alignItems:"center", justifyContent:"space-between", background:"#f8fafc" }}>
-        <button onClick={onBack} style={{ padding:"10px 22px", borderRadius:8, fontSize:13.5, fontWeight:600, cursor:"pointer", background:"#fff", border:"1.5px solid #e2e8f0", color:"#475569", display:"flex", alignItems:"center", gap:8 }}>
-          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
-          Back
-        </button>
-        <div style={{ display:"flex", gap:10, alignItems:"center" }}>
-          <span style={{ fontSize:11.5, color: allPicked ? "#16a34a" : "#dc2626" }}>
-            {allPicked ? "All subjects scheduled ✓" : `${SUBJECTS.length - Object.keys(picks).length} subject(s) without a section`}
-          </span>
-          <button onClick={() => allPicked && onNext(picks)} disabled={!allPicked} style={{ padding:"10px 22px", borderRadius:8, fontSize:13.5, fontWeight:600, cursor: allPicked ? "pointer" : "not-allowed", background: allPicked ? "#2563eb" : "#93c5fd", border:"none", color:"#fff", display:"flex", alignItems:"center", gap:8, opacity: allPicked ? 1 : .7 }}>
-            Next: Upload Picture
-            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
-          </button>
+                    {/* Selected checkmark */}
+                    {isSelected && (
+                      <div style={{
+                        position: "absolute", top: 12, left: 12,
+                        width: 22, height: 22, borderRadius: "50%",
+                        background: accent,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        boxShadow: "0 6px 18px rgba(0,0,0,0.06)"
+                      }}>
+                        <svg width="11" height="11" fill="none" stroke="#fff" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      </div>
+                    )}
+
+                    {/* Icon (rounded square) */}
+                    <div style={{
+                      width: 64, height: 64, borderRadius: 14,
+                      background: isSelected ? `${accent}18` : "#fbfdff",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      margin: "0 auto 14px",
+                      color: isSelected ? accent : "#94a3b8",
+                      transition: "all .2s",
+                      boxShadow: isSelected ? "inset 0 1px 0 rgba(255,255,255,0.6)" : "none",
+                    }}>
+                      {icon}
+                    </div>
+
+                    {/* Label */}
+                    <div style={{
+                      fontSize: 17, fontWeight: 800,
+                      fontFamily: "'Sora', sans-serif",
+                      color: isSelected ? "#0f172a" : "#1e293b",
+                      marginBottom: 6,
+                      transition: "color .2s",
+                    }}>
+                      {label}
+                    </div>
+
+                    {/* Divider */}
+                    <div style={{
+                      width: 40, height: 3, borderRadius: 4,
+                      background: isSelected ? accent : "#eef2f6",
+                      margin: "0 auto 10px",
+                      transition: "background .2s",
+                    }}/>
+
+                    {/* Time */}
+                    <div style={{
+                      fontSize: 13, fontWeight: 600,
+                      color: isSelected ? accent : "#475569",
+                      marginBottom: 10,
+                      transition: "color .2s",
+                    }}>
+                      {time}
+                    </div>
+
+                    {/* Desc */}
+                    <div style={{
+                      fontSize: 12, color: "#94a3b8",
+                      lineHeight: 1.5,
+                    }}>
+                      {desc}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Selected summary */}
+            {selected && (
+              <div style={{
+                display: "flex", alignItems: "center", gap: 10,
+                background: "#f0fdf4", border: "1px solid #86efac",
+                borderRadius: 10, padding: "12px 16px", marginBottom: 24,
+              }}>
+                <svg width="16" height="16" fill="none" stroke="#16a34a" strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span style={{ fontSize: 13, color: "#15803d", fontWeight: 500 }}>
+                  You selected: <strong>{schedules.find(s => s.key === selected)?.label}</strong> ({schedules.find(s => s.key === selected)?.time})
+                </span>
+              </div>
+            )}
+
+            {/* Schedule footer spacing only — uploader removed to match design */}
+            <div style={{ height: 8, marginBottom: 24 }} />
+
+            {/* Footer */}
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingTop: 4,
+            }}>
+              <button
+                onClick={() => onBack && onBack()}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "10px 20px", borderRadius: 8,
+                  fontSize: 13.5, fontWeight: 600, cursor: "pointer",
+                  background: "#fff", border: "1.5px solid #e2e8f0",
+                  color: "#475569", fontFamily: "'DM Sans', sans-serif",
+                }}
+              >
+                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path d="m15 18-6-6 6-6"/>
+                </svg>
+                Back
+              </button>
+
+              <button
+                onClick={handleNext}
+                disabled={!selected}
+                style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  padding: "10px 24px", borderRadius: 8,
+                  fontSize: 13.5, fontWeight: 600,
+                  background: selected ? "#2563eb" : "#eef2f6",
+                  border: "none", color: selected ? "#fff" : "#9aa5b2",
+                  fontFamily: "'DM Sans', sans-serif",
+                  transition: "background .2s",
+                  cursor: selected ? "pointer" : "not-allowed",
+                }}
+              >
+                Next: Submit Requirements
+                <svg width="14" height="14" fill="none" stroke={selected ? "currentColor" : "#9aa5b2"} strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

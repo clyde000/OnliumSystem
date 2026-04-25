@@ -62,6 +62,7 @@ export default function HomepageUniversity() {
           </button>
         </div>
 
+      
       </nav>
 
       <section className="hero">
@@ -75,7 +76,7 @@ export default function HomepageUniversity() {
           <button className="btn-hero-outline">Log in as moderator</button>
         </div>
       </section>
-
+      <img className="hero-image" src="/assets/hero-image.png" alt="Hero" />
       <div className="section-card">
         <h2>Enroll in Onlium the Smart Way</h2>
         <p className="section-subtitle">Choose your college program and take the first step toward your future career.</p>

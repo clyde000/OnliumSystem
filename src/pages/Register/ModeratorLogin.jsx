@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './RegisterUniversity.css';
+import './ModeratorLogin.css';
 
 const ModeratorLogin = () => {
   const navigate = useNavigate();
@@ -9,21 +9,66 @@ const ModeratorLogin = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Placeholder: moderator auth
     console.log('moderator', { username, password });
-    navigate('/');
+    navigate('/admin');
   };
 
   return (
-    <div className="register-root">
-      <form className="register-form" onSubmit={handleSubmit}>
-        <h3>Moderator Login</h3>
-        <label>Username</label>
-        <input value={username} onChange={(e)=>setUsername(e.target.value)} required />
-        <label>Password</label>
-        <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} required />
-        <button className="btn primary" type="submit">Enter</button>
-      </form>
+    <div className="mod-page">
+      <div className="mod-branding">
+        <h1 className="mod-tagline">
+          Onlium <br />
+          offers <br />
+          Interactive <br />
+          learning <br />
+          experience
+        </h1>
+      </div>
+
+      <div className="mod-card-wrapper">
+        <div className="mod-card-body">
+          <h2 className="mod-card-title">ADMIN</h2>
+          <p className="mod-card-subtitle">Log in to manage your platform</p>
+
+          <form className="mod-form" onSubmit={handleSubmit}>
+            <div className="mod-form-group">
+              <label className="mod-form-label" htmlFor="mod-username">
+                Email address
+              </label>
+              <input
+                id="mod-username"
+                type="email"
+                className="mod-form-input"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                autoComplete="username"
+                placeholder="name@onlium.com"
+                required
+              />
+            </div>
+
+            <div className="mod-form-group">
+              <label className="mod-form-label" htmlFor="mod-password">
+                Password
+              </label>
+              <input
+                id="mod-password"
+                type="password"
+                className="mod-form-input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+
+            <button className="mod-btn-login" type="submit">
+              Log In
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };
