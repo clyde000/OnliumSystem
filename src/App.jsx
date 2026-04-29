@@ -1,4 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute, {
+  AdminRoute,
+  StudentRoute,
+  PublicRoute,
+} from "./components/ProtectedRoute";
 import HomepageUniversity from "./pages/Homepage/HomepageUniversity.jsx";
 import RegisterUniversity from "./pages/Register/RegisterUniversity.jsx";
 import CreateAccount from "./pages/Register/CreateAccount.jsx";
@@ -25,33 +31,156 @@ import Notifications from "./pages/Dashboard/Notifications.jsx";
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomepageUniversity />} />
-        <Route path="/apply-now" element={<div>Apply Now</div>} />
-        <Route path="/login" element={<ModeratorLogin />} />
-        <Route path="/register" element={<RegisterUniversity />} />
-        <Route path="/register/create" element={<CreateAccount />} />
-        <Route path="/register/login" element={<Login />} />
-        <Route path="/register/moderator" element={<ModeratorLogin />} />
-        <Route path="/admin" element={<Layout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="students" element={<StudentManagement />} />
-          <Route path="resources" element={<ResourcesAdmin />} />
-          <Route path="curriculum" element={<CourseCurriculum />} />
-          <Route path="bulletin" element={<Bulletin />} />
-        </Route>
-        <Route path="/dashboard" element={<OnliumDashboard />} />
-        <Route path="/student/resources" element={<ResourcesStudent />} />
-        <Route path="/student/appointments" element={<AppointmentStudent />} />
-        <Route path="/student/notifications" element={<NotificationsStudent />} />
-        <Route path="/student/studyload" element={<StudyloadStudent />} />
-        <Route path="/studyload" element={<Studyload />} />
-        <Route path="/resources" element={<Resources />} />
-        <Route path="/appointment" element={<Appointment />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/enrollment" element={<EnrollmentLayout />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<HomepageUniversity />} />
+          <Route path="/apply-now" element={<div>Apply Now</div>} />
+
+          {/* Authentication Routes */}
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <ModeratorLogin />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <RegisterUniversity />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register/create"
+            element={
+              <PublicRoute>
+                <CreateAccount />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register/moderator"
+            element={
+              <PublicRoute>
+                <ModeratorLogin />
+              </PublicRoute>
+            }
+          />
+
+          {/* Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <Layout />
+              </AdminRoute>
+            }
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="students" element={<StudentManagement />} />
+            <Route path="resources" element={<ResourcesAdmin />} />
+            <Route path="curriculum" element={<CourseCurriculum />} />
+            <Route path="bulletin" element={<Bulletin />} />
+          </Route>
+
+          {/* Student Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <StudentRoute>
+                <OnliumDashboard />
+              </StudentRoute>
+            }
+          />
+          <Route
+            path="/student/resources"
+            element={
+              <StudentRoute>
+                <ResourcesStudent />
+              </StudentRoute>
+            }
+          />
+          <Route
+            path="/student/appointments"
+            element={
+              <StudentRoute>
+                <AppointmentStudent />
+              </StudentRoute>
+            }
+          />
+          <Route
+            path="/student/notifications"
+            element={
+              <StudentRoute>
+                <NotificationsStudent />
+              </StudentRoute>
+            }
+          />
+          <Route
+            path="/student/studyload"
+            element={
+              <StudentRoute>
+                <StudyloadStudent />
+              </StudentRoute>
+            }
+          />
+
+          {/* Enrollment Routes */}
+          <Route
+            path="/studyload"
+            element={
+              <ProtectedRoute>
+                <Studyload />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resources"
+            element={
+              <ProtectedRoute>
+                <Resources />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/appointment"
+            element={
+              <ProtectedRoute>
+                <Appointment />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <Notifications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/enrollment"
+            element={
+              <ProtectedRoute>
+                <EnrollmentLayout />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

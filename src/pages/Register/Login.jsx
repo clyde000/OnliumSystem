@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 import "./Login.css";
 
 export default function Login() {
@@ -7,40 +8,36 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
 
     if (!email.trim() || !password) {
-      alert('Please enter email and password.');
+      setError("Please enter email and password.");
       return;
     }
 
-    const usersJson = localStorage.getItem('onlium_users');
-    const users = usersJson ? JSON.parse(usersJson) : [];
+    setLoading(true);
+    setError("");
 
-    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-    if (!user) {
-      alert('No account found with this email. Please sign up.');
-      return;
+    const result = await login(email, password);
+
+    if (result.success) {
+      setError("");
+      navigate("/dashboard");
+    } else {
+      setError(result.error);
     }
 
-    if (user.password !== password) {
-      alert('Incorrect password.');
-      return;
-    }
-
-    // Save current user and navigate to dashboard
-    const safeUser = { firstName: user.firstName, lastName: user.lastName, email: user.email };
-    localStorage.setItem('onlium_current_user', JSON.stringify(safeUser));
-    alert('Login successful. Redirecting to dashboard...');
-    navigate('/dashboard');
+    setLoading(false);
   };
 
   return (
     <div className="login-page">
-
       <div className="login-left">
         <h1>Onlium offers Interactive learning experience</h1>
         <div className="login-logo-bars">
@@ -96,22 +93,38 @@ export default function Login() {
           <a href="#">Forgot password?</a>
         </div>
 
-        <button className="login-btn" onClick={handleSubmit}>
-          {activeTab === "login" ? "Log In" : "Sign Up"}
+        <button className="login-btn" onClick={handleSubmit} disabled={loading}>
+          {loading
+            ? "Logging in..."
+            : activeTab === "login"
+              ? "Log In"
+              : "Sign Up"}
         </button>
 
         <p className="login-bottom-text">
           {activeTab === "login" ? (
             <>
               Don't have an account?{" "}
-              <a href="#" onClick={(e) => { e.preventDefault(); navigate("/register/create"); }}>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/register/create");
+                }}
+              >
                 Sign Up
               </a>
             </>
           ) : (
             <>
               Already have an account?{" "}
-              <a href="#" onClick={(e) => { e.preventDefault(); navigate("/register/login"); }}>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/register/login");
+                }}
+              >
                 Log In
               </a>
             </>

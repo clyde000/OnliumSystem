@@ -1,24 +1,66 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { adminService } from "../../services/adminService";
 import "./CourseCurriculum.css";
 
-const subjects = [
-  { code: "IT 201", subject: "DATA STRUCTURES", units: "3", days: "MWF", time: "8-9 AM", room: "NLAB 2" },
-  { code: "IT 202", subject: "OBJECT - ORIENTED PROG", units: "3", days: "TTH", time: "9-10:30AM", room: "SALB 1" },
-  { code: "IT 203", subject: "DATABASE MANAGEMENT", units: "3", days: "MWF", time: "10-11AM", room: "SALB 2" },
-  { code: "GE 211", subject: "ETHICS IN TECHNOLOGY", units: "3", days: "MWF", time: "1-2:30PM", room: "SALB 3" },
-  { code: "PE 201", subject: "PHYSICAL EDUCATION 2", units: "2", days: "TTH", time: "3-5PM", room: "G" },
-  { code: "IT 204", subject: "WEB DEVELOPMENT", units: "3", days: "MWF", time: "5-6PM", room: "SALB 4" },
-  { code: "IT 205", subject: "SYSTEM ANALYSIS", units: "3", days: "MWF", time: "6-7PM", room: "209" },
-];
-
-const students = [
-  { id: 1, name: "Ron, Regodo", program: "bsit", year: "2nd Year", initials: "RR", color: "#3b82f6" },
-  { id: 2, name: "Yanzie, Suson", program: "bscs", year: "1st Year", initials: "YS", color: "#22c55e" },
-  { id: 3, name: "Jessa Surigao", program: "bsece", year: "3rd Year", initials: "JS", color: "#eab308" },
-];
+// Remove hardcoded data - will be fetched from API
+const subjects = [];
+const studentsList = [];
 
 export default function CourseCurriculum() {
-  const [selectedStudent, setSelectedStudent] = useState(students[0]);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [studentList, setStudentList] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const studentsResult = await adminService.getStudents();
+        const curriculumResult = await adminService.getCurriculum();
+
+        if (studentsResult.success) {
+          setStudentList(studentsResult.data);
+          if (studentsResult.data.length > 0) {
+            setSelectedStudent(studentsResult.data[0]);
+          }
+        }
+
+        if (curriculumResult.success) {
+          setSubjects(curriculumResult.data);
+        } else {
+          setError(curriculumResult.error);
+        }
+      } catch (err) {
+        setError("Failed to load data");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading)
+    return (
+      <div className="course-curriculum">
+        <p>Loading...</p>
+      </div>
+    );
+  if (error)
+    return (
+      <div className="course-curriculum">
+        <p>Error: {error}</p>
+      </div>
+    );
+
+  if (!selectedStudent)
+    return (
+      <div className="course-curriculum">
+        <p>No students available</p>
+      </div>
+    );
 
   return (
     <div className="course-curriculum">
@@ -78,12 +120,17 @@ export default function CourseCurriculum() {
                   className={`student-item ${selectedStudent.id === student.id ? "selected" : ""}`}
                   onClick={() => setSelectedStudent(student)}
                 >
-                  <div className="student-avatar-small" style={{ background: student.color }}>
+                  <div
+                    className="student-avatar-small"
+                    style={{ background: student.color }}
+                  >
                     {student.initials}
                   </div>
                   <div className="student-details">
                     <p className="student-name">{student.name}</p>
-                    <p className="student-program">{student.program} {student.year}</p>
+                    <p className="student-program">
+                      {student.program} {student.year}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -92,7 +139,7 @@ export default function CourseCurriculum() {
 
           <div className="assign-curriculum-card">
             <h3>Assign Curriculum</h3>
-            
+
             <div className="form-group">
               <label>Program</label>
               <select className="curriculum-select">

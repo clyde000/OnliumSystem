@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 import "./EnrollmentChecklist.css";
 
 const ITEMS_DEFAULT = [
@@ -13,44 +14,31 @@ const ITEMS_DEFAULT = [
 
 export default function EnrollmentChecklist() {
   const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState(null);
+  const { user, isAuthenticated } = useAuth();
   const [progress, setProgress] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const raw = localStorage.getItem("onlium_current_user");
-    if (!raw) return setCurrentUser(null);
-    try {
-      const u = JSON.parse(raw);
-      setCurrentUser(u);
-
-      const key = `onlium_progress_${u.email}`;
-      const saved = localStorage.getItem(key);
-      if (saved) {
-        setProgress(JSON.parse(saved));
-      } else {
-        // sensible defaults: personal info done for returning users
-        const defaults = {
-          personal: true,
-          upload: false,
-          program: true,
-          schedule: true,
-          submit: false,
-          payment: false,
-        };
-        setProgress(defaults);
-        localStorage.setItem(key, JSON.stringify(defaults));
-      }
-    } catch (err) {
-      console.error(err);
-      setCurrentUser(null);
+    if (!isAuthenticated()) {
+      setProgress({});
+      setLoading(false);
+      return;
     }
-  }, []);
+
+    // TODO: Fetch progress from backend API when available
+    // For now, initialize with empty progress that will be updated via API
+    const defaults = {};
+    ITEMS_DEFAULT.forEach((item) => {
+      defaults[item.id] = false;
+    });
+    setProgress(defaults);
+    setLoading(false);
+  }, [user, isAuthenticated]);
 
   const saveProgress = (newProgress) => {
     setProgress(newProgress);
-    if (!currentUser) return;
-    const key = `onlium_progress_${currentUser.email}`;
-    localStorage.setItem(key, JSON.stringify(newProgress));
+    // TODO: Save to backend API
+    // await enrollmentService.updateProgress(newProgress);
   };
 
   const toggle = (id) => {
@@ -58,7 +46,7 @@ export default function EnrollmentChecklist() {
     saveProgress(next);
   };
 
-  if (!currentUser) {
+  if (!isAuthenticated()) {
     return (
       <div className="card">
         <div className="card-title">Enrollment steps</div>
@@ -70,21 +58,46 @@ export default function EnrollmentChecklist() {
     );
   }
 
-  const doneCount = ITEMS_DEFAULT.reduce((acc, it) => acc + (progress[it.id] ? 1 : 0), 0);
+  if (loading) {
+    return (
+      <div className="card">
+        <div className="card-title">Enrollment steps</div>
+        <div style={{ padding: 12 }}>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const doneCount = ITEMS_DEFAULT.reduce(
+    (acc, it) => acc + (progress[it.id] ? 1 : 0),
+    0,
+  );
   const total = ITEMS_DEFAULT.length;
 
   const nextStep = ITEMS_DEFAULT.find((it) => !progress[it.id]);
 
   return (
     <div className="card">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <div>
           <div className="card-title">Enrollment steps</div>
-          <div style={{ fontSize: 12, color: "#6b7280" }}>{`${doneCount} of ${total} complete`}</div>
+          <div
+            style={{ fontSize: 12, color: "#6b7280" }}
+          >{`${doneCount} of ${total} complete`}</div>
         </div>
         <div>
           {nextStep ? (
-            <button className="continue-link" onClick={() => navigate(`/apply-now?step=${nextStep.id}`)}>
+            <button
+              className="continue-link"
+              onClick={() => navigate(`/apply-now?step=${nextStep.id}`)}
+            >
               Continue →
             </button>
           ) : (
@@ -99,11 +112,17 @@ export default function EnrollmentChecklist() {
           return (
             <div className="checklist-row" key={it.id}>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <input type="checkbox" checked={done} onChange={() => toggle(it.id)} />
+                <input
+                  type="checkbox"
+                  checked={done}
+                  onChange={() => toggle(it.id)}
+                />
                 <div className="checklist-label">{it.title}</div>
               </div>
               <div>
-                <span className={`status-pill ${done ? "status-done" : "status-pending"}`}>
+                <span
+                  className={`status-pill ${done ? "status-done" : "status-pending"}`}
+                >
                   {done ? "Done" : "Pending"}
                 </span>
               </div>

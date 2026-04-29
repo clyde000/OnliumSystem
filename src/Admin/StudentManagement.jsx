@@ -1,15 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { adminService } from "../../services/adminService";
 import "./StudentManagement.css";
 
-const students = [
-  { id: "ONLS-2025-00124", name: "Ehron Regodo", program: "BS ECE", year: "BS ECE", gender: "Male", status: "Active" },
-  { id: "ONLS-2025-00098", name: "Yanzie Suson", program: "BS Comp Sci", year: "1st Year", gender: "Female", status: "Active" },
-  { id: "ONLS-2025-00201", name: "Rheza Parusa", program: "BS ECE", year: "3rd Year", gender: "Female", status: "Pending" },
-  { id: "ONLS-2025-00175", name: "Dianne Manteza", program: "BS Info Tech", year: "2nd Year", gender: "Female", status: "Pending" },
-  { id: "ONLS-2025-00111", name: "Jessa Surigao", program: "BS Business", year: "1st Year", gender: "Female", status: "Inactive" },
-  { id: "ONLS-2025-00087", name: "Clyde Casipong", program: "BS Comp Sci", year: "1st Year", gender: "Female", status: "Active" },
-  { id: "ONLS-2025-00045", name: "Faith Ymbong", program: "BS Info Tech", year: "2nd Year", gender: "Female", status: "Pending" },
-];
+// Remove hardcoded data - will be fetched from API
+const students = [];
 
 const getStatusClass = (status) => {
   switch (status.toLowerCase()) {
@@ -26,6 +20,42 @@ const getStatusClass = (status) => {
 
 export default function StudentManagement() {
   const [activeTab, setActiveTab] = useState("list");
+  const [studentList, setStudentList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const result = await adminService.getStudents();
+        if (result.success) {
+          setStudentList(result.data);
+        } else {
+          setError(result.error);
+        }
+      } catch (err) {
+        setError("Failed to load students");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudents();
+  }, []);
+
+  if (loading)
+    return (
+      <div className="student-management">
+        <p>Loading...</p>
+      </div>
+    );
+  if (error)
+    return (
+      <div className="student-management">
+        <p>Error: {error}</p>
+      </div>
+    );
 
   return (
     <div className="student-management">
@@ -97,7 +127,9 @@ export default function StudentManagement() {
                     <td>{student.year}</td>
                     <td>{student.gender}</td>
                     <td>
-                      <span className={`status-badge ${getStatusClass(student.status)}`}>
+                      <span
+                        className={`status-badge ${getStatusClass(student.status)}`}
+                      >
                         {student.status}
                       </span>
                     </td>
@@ -127,7 +159,7 @@ export default function StudentManagement() {
                   <span className="new-badge">NEW</span>
                 </div>
               </div>
-              
+
               <div className="card-section">
                 <h4>PERSONAL INFORMATION</h4>
                 <div className="info-row">
@@ -200,7 +232,7 @@ export default function StudentManagement() {
                   <span className="continuing-badge">Continuing student</span>
                 </div>
               </div>
-              
+
               <div className="card-section">
                 <h4>PERSONAL INFORMATION</h4>
                 <div className="info-row">
