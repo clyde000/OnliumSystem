@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./NotificationsStudent.css";
+import "./styles/NotificationsStudent.css";
 import Sidebar from "../Sidebar/Sidebar";
 import Topbar from "../Topbar/Topbar";
 
@@ -45,6 +45,7 @@ const notifications = [
 
 export default function NotificationsStudent() {
   const [activeNav, setActiveNav] = useState("Notifications");
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleMarkAllRead = () => {
     console.log("Mark all as read");
@@ -77,9 +78,9 @@ export default function NotificationsStudent() {
 
   return (
     <div className="portal">
-      <Sidebar activeNav={activeNav} onNavChange={setActiveNav} />
+      <Sidebar activeNav={activeNav} onNavChange={setActiveNav} mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} hideLogout />
       <div className="main">
-        <Topbar />
+        <Topbar onMenuToggle={() => setMobileOpen(!mobileOpen)} />
         <div className="content">
           <div style={{ padding: "28px 32px", flex: 1, maxWidth: 900, margin: "0 auto" }}>
             {/* Header */}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./AppointmentStudent.css";
+import "./styles/AppointmentStudent.css";
 import Sidebar from "../Sidebar/Sidebar";
 import Topbar from "../Topbar/Topbar";
 
@@ -37,6 +37,7 @@ const slots = [
 export default function AppointmentStudent() {
   const [activeNav, setActiveNav] = useState("Appointments");
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleBookSlot = () => {
     if (selectedSlot) {
@@ -59,9 +60,9 @@ export default function AppointmentStudent() {
 
   return (
     <div className="portal">
-      <Sidebar activeNav={activeNav} onNavChange={setActiveNav} />
+      <Sidebar activeNav={activeNav} onNavChange={setActiveNav} mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} hideLogout />
       <div className="main">
-        <Topbar />
+        <Topbar onMenuToggle={() => setMobileOpen(!mobileOpen)} />
         <div className="content">
           <div style={{ padding: "28px 32px", flex: 1 }}>
             <div style={{ marginBottom: 24 }}>
@@ -73,10 +74,10 @@ export default function AppointmentStudent() {
               </p>
             </div>
 
-            {/* Info Banner */}
+            {/* Info Banner - Enrolled Notice */}
             <div style={{ 
-              background: "#eff6ff", 
-              border: "1px solid #bfdbfe", 
+              background: "#f0fdf4", 
+              border: "1px solid #86efac", 
               borderRadius: 12, 
               padding: 16, 
               marginBottom: 24,
@@ -84,149 +85,73 @@ export default function AppointmentStudent() {
               alignItems: "center",
               gap: 12
             }}>
-              <svg width="20" height="20" fill="none" stroke="#2563eb" strokeWidth="2" viewBox="0 0 24 24">
+              <svg width="20" height="20" fill="none" stroke="#16a34a" strokeWidth="2" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="10"/>
-                <path d="M12 16v-4M12 8h.01"/>
+                <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <p style={{ fontSize: 14, color: "#1d4ed8", margin: 0, lineHeight: 1.5 }}>
-                Appointment on hold — will be scheduled after admin approves your requirements.
+              <p style={{ fontSize: 14, color: "#15803d", margin: 0, lineHeight: 1.5, fontWeight: 500 }}>
+                You are now officially enrolled. Your study load can now be released.
               </p>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 24 }}>
-              {/* Left - Available Slots */}
+              {/* Left - Appointment Status */}
               <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2e8f0", padding: 24 }}>
                 <h2 style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "#2563eb", margin: "0 0 20px 0" }}>
-                  Available Slots
+                  Appointment Status
                 </h2>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {slots.map((slot) => {
-                    const statusStyle = getStatusStyle(slot.status);
-                    const isSelected = selectedSlot?.id === slot.id;
-                    const isDisabled = slot.status === "Full";
-                    
-                    return (
-                      <div
-                        key={slot.id}
-                        onClick={() => !isDisabled && setSelectedSlot(slot)}
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          padding: 16,
-                          borderRadius: 12,
-                          border: isSelected ? "2px solid #2563eb" : `1px solid ${statusStyle.border}`,
-                          background: isSelected ? "#eff6ff" : statusStyle.bg,
-                          cursor: isDisabled ? "not-allowed" : "pointer",
-                          opacity: isDisabled ? 0.6 : 1,
-                          transition: "all 0.2s"
-                        }}
-                      >
-                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                          <span style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>
-                            {slot.day}, {slot.date}
-                          </span>
-                          <span style={{ fontSize: 13, color: "#64748b" }}>
-                            {slot.time}
-                          </span>
-                        </div>
-                        <span style={{ 
-                          padding: "4px 12px", 
-                          borderRadius: 20, 
-                          fontSize: 12, 
-                          fontWeight: 600, 
-                          color: statusStyle.color,
-                          background: "#fff",
-                          border: `1px solid ${statusStyle.border}`
-                        }}>
-                          {slot.status}
-                        </span>
-                      </div>
-                    );
-                  })}
+                <div style={{ marginBottom: 16 }}>
+                  <span style={{ padding: "6px 14px", background: "#f0fdf4", color: "#16a34a", borderRadius: 20, fontSize: 12, fontWeight: 700, border: "1px solid #86efac" }}>
+                    Appointment available
+                  </span>
                 </div>
 
-                <button
-                  onClick={handleBookSlot}
-                  disabled={!selectedSlot}
-                  style={{
-                    width: "100%",
-                    marginTop: 20,
-                    padding: "14px 24px",
-                    background: selectedSlot ? "#2563eb" : "#94a3b8",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: 10,
-                    fontSize: 14,
-                    fontWeight: 600,
-                    cursor: selectedSlot ? "pointer" : "not-allowed",
-                    transition: "all 0.2s"
-                  }}
-                >
-                  Book a slot
-                </button>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <div style={{ display: "flex", gap: 8, fontSize: 13 }}>
+                    <span style={{ color: "#94a3b8", minWidth: 90 }}>Signed in as</span>
+                    <span style={{ fontWeight: 600, color: "#1e293b" }}>Ron Regodo</span>
+                  </div>
+                  <div style={{ display: "flex", gap: 8, fontSize: 13 }}>
+                    <span style={{ color: "#94a3b8", minWidth: 90 }}>Email</span>
+                    <span style={{ fontWeight: 500, color: "#2563eb" }}>ehron22@gmail.com</span>
+                  </div>
+                </div>
               </div>
 
-              {/* Right - Status & Payment */}
+              {/* Right - Scheduled Appointment */}
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                {/* Current Status */}
                 <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2e8f0", padding: 20 }}>
                   <h3 style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "#2563eb", margin: "0 0 16px 0" }}>
-                    Current Status
+                    Scheduled Appointment
                   </h3>
-                  
-                  <div style={{ 
-                    padding: 12, 
-                    background: "#fffbeb", 
-                    border: "1px solid #fcd34d", 
-                    borderRadius: 8,
-                    marginBottom: 12
-                  }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: "#d97706" }}>
-                      Waiting for admin approval
+
+                  <div style={{ marginBottom: 14 }}>
+                    <span style={{ padding: "5px 12px", background: "#f0fdf4", color: "#16a34a", borderRadius: 20, fontSize: 12, fontWeight: 700, border: "1px solid #86efac" }}>
+                      Enrollment Completed
                     </span>
                   </div>
-                  
-                  <p style={{ fontSize: 13, color: "#64748b", margin: 0, lineHeight: 1.6 }}>
-                    Your payment appointment will be scheduled once your requirements are approved. You'll receive an email/SMS notification.
-                  </p>
-                </div>
 
-                {/* Appointment Payment */}
-                <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2e8f0", padding: 20 }}>
-                  <h3 style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", color: "#2563eb", margin: "0 0 16px 0" }}>
-                    Appointment Payment
-                  </h3>
-                  
-                  <div style={{ 
-                    display: "flex", 
-                    justifyContent: "space-between", 
-                    alignItems: "center",
-                    padding: "12px 16px",
-                    background: "#f8fafc",
-                    borderRadius: 10,
-                    border: "1px solid #e2e8f0"
-                  }}>
-                    <div>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1e293b", margin: "0 0 2px 0" }}>
-                        Tuition walk-in
-                      </p>
-                      <p style={{ fontSize: 12, color: "#94a3b8", margin: 0 }}>
-                        Payment pending
-                      </p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+                      <span style={{ color: "#94a3b8" }}>Date & Time</span>
+                      <span style={{ fontWeight: 600, color: "#1e293b" }}>2026-04-30 11:27 PM</span>
                     </div>
-                    <span style={{ 
-                      padding: "4px 12px", 
-                      background: "#f0fdf4", 
-                      color: "#16a34a", 
-                      borderRadius: 20,
-                      fontSize: 12,
-                      fontWeight: 600,
-                      border: "1px solid #86efac"
-                    }}>
-                      Pending
-                    </span>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+                      <span style={{ color: "#94a3b8" }}>Location</span>
+                      <span style={{ fontWeight: 600, color: "#1e293b", textAlign: "right", maxWidth: 160 }}>Aclc College of Mandaue</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+                      <span style={{ color: "#94a3b8" }}>Status</span>
+                      <span style={{ fontWeight: 600, color: "#16a34a" }}>Enrollment Completed</span>
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: 16, padding: 12, background: "#f8fafc", borderRadius: 10, border: "1px solid #e2e8f0" }}>
+                    <p style={{ fontSize: 12, color: "#64748b", margin: 0, lineHeight: 1.6 }}>
+                      <span style={{ fontWeight: 600, color: "#1e293b" }}>Notes: </span>
+                      Please proceed to the school cashier to pay your required downpayment for this semester and complete your enrollment.
+                    </p>
                   </div>
                 </div>
               </div>

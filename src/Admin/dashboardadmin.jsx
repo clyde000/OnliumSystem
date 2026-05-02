@@ -1,4 +1,4 @@
-import "./dashboardadmin.css";
+import "./styles/dashboardadmin.css";
 
 const stats = [
   { label: "Total Students", value: "1,248" },
@@ -22,22 +22,11 @@ const pendingReview = [
   { initials: "YF", color: "#3b82f6", name: "Ymbong, Faith", program: "BSIT - Requirements upload" },
 ];
 
-const appointments = [
-  { date: "18", month: "APR", name: "Casipong, Clyde", type: "Tuition", mode: "Walk-In", location: "Cashier Office", id: "ONLS-2025-00124", status: "review" },
-  { date: "18", month: "APR", name: "Ymbong, Hope", type: "Registrar", mode: "Pickup", location: "Registrar Office", id: "ONLS-2026-00087", status: "urgent" },
-  { date: "19", month: "APR", name: "Manteza, Carlo John", type: "Tuition", mode: "Walk-In", location: "Cashier Office", id: "ONLS-2025-00211", status: "review" },
-];
-
 const initials = (name) => name.split(" ").map(n => n[0]).join("").slice(0,2).toUpperCase();
 
 export default function Dashboard() {
   return (
     <div className="dashboard">
-      <div className="page-banner">
-        <h1>Dashboard</h1>
-        <span className="banner-sub">SY 2026</span>
-      </div>
-
       <div className="stats-row">
         {stats.map(s => (
           <div key={s.label} className="card stat-card">
@@ -77,28 +66,6 @@ export default function Dashboard() {
                   <button className="btn btn-outline btn-sm">Review</button>
                 </div>
               ))} 
-            </div>
-          </div>
-
-          <div className="card appt-card">
-            <p className="section-title">Upcoming Appointments</p>
-            <div className="appt-list">
-              {appointments.map((a, i) => (
-                <div key={i} className="appt-item">
-                  <div className="appt-date">
-                    <span className="appt-day">{a.date}</span>
-                    <span className="appt-month">{a.month}</span>
-                  </div>
-                  <div className="appt-info">
-                    <p className="appt-name">{a.name} • {a.type}</p>
-                    <p className="appt-sub">{a.mode} · {a.location}</p>
-                    <p className="appt-id">{a.id}</p>
-                  </div>
-                  <button className={`btn btn-sm ${a.status === "urgent" ? "btn-urgent" : "btn-primary"}`}>
-                    Review
-                  </button>
-                </div>
-              ))}
             </div>
           </div>
         </div>

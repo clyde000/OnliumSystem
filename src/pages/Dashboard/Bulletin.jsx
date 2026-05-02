@@ -1,4 +1,4 @@
-import "./Bulletin.css";
+import "./styles/Bulletin.css";
 
 const BULLETIN = [
   "Enrollment deadline extended",

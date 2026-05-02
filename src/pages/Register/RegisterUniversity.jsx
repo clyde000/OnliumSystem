@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import CreateAccount from './CreateAccount';
 import Login from './Login';
-import './RegisterUniversity.css';
+import './styles/RegisterUniversity.css';
 
 const RegisterUniversity = () => {
   const [activeTab, setActiveTab] = useState('signup');

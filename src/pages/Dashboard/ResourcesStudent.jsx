@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./ResourcesStudent.css";
+import "./styles/ResourcesStudent.css";
 import Sidebar from "../Sidebar/Sidebar";
 import Topbar from "../Topbar/Topbar";
 
@@ -23,6 +23,7 @@ const resources = [
 export default function ResourcesStudent() {
   const [copiedId, setCopiedId] = useState(null);
   const [activeNav, setActiveNav] = useState("Resources");
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleCopy = (url, id) => {
     navigator.clipboard.writeText(url);
@@ -36,9 +37,9 @@ export default function ResourcesStudent() {
 
   return (
     <div className="portal">
-      <Sidebar activeNav={activeNav} onNavChange={setActiveNav} />
+      <Sidebar activeNav={activeNav} onNavChange={setActiveNav} mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} hideLogout />
       <div className="main">
-        <Topbar />
+        <Topbar onMenuToggle={() => setMobileOpen(!mobileOpen)} />
         <div className="content">
           <div className="resources-student">
             <div className="resources-header-student">

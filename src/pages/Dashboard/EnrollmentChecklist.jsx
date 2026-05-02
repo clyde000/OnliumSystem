@@ -1,20 +1,31 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "./EnrollmentChecklist.css";
+import "./styles/EnrollmentChecklist.css";
 
-const ITEMS_DEFAULT = [
-  { id: "personal", title: "Personal information" },
-  { id: "upload", title: "Upload requirements" },
-  { id: "program", title: "Select program" },
-  { id: "schedule", title: "Choose schedule" },
-  { id: "submit", title: "Submit requirements" },
-  { id: "payment", title: "Finalize enrollment" },
+const ALL_STEPS = [
+  { id: "personal",  title: "Personal information" },
+  { id: "upload",    title: "Upload requirements" },
+  { id: "program",   title: "Select program" },
+  { id: "schedule",  title: "Choose schedule" },
+  { id: "submit",    title: "Submit requirements" },
 ];
+
+function getStepsForType(studentType, irregular) {
+  if (studentType === "continuing" && irregular === "yes") {
+    return ALL_STEPS.filter(s => s.id !== "program" && s.id !== "schedule");
+  }
+  if (studentType === "continuing") {
+    return ALL_STEPS.filter(s => s.id !== "program");
+  }
+  return ALL_STEPS;
+}
 
 export default function EnrollmentChecklist() {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(null);
   const [progress, setProgress] = useState({});
+  const [studentType, setStudentType] = useState(null);
+  const [irregular, setIrregular] = useState(null);
 
   useEffect(() => {
     const raw = localStorage.getItem("onlium_current_user");
@@ -23,25 +34,23 @@ export default function EnrollmentChecklist() {
       const u = JSON.parse(raw);
       setCurrentUser(u);
 
+      // Load enrollment type
+      const enrollment = localStorage.getItem("onlium_enrollment");
+      if (enrollment) {
+        const { studentType: st, irregular: irr } = JSON.parse(enrollment);
+        setStudentType(st);
+        setIrregular(irr);
+      }
+
+      // Load progress
       const key = `onlium_progress_${u.email}`;
       const saved = localStorage.getItem(key);
       if (saved) {
         setProgress(JSON.parse(saved));
       } else {
-        // sensible defaults: personal info done for returning users
-        const defaults = {
-          personal: true,
-          upload: false,
-          program: true,
-          schedule: true,
-          submit: false,
-          payment: false,
-        };
-        setProgress(defaults);
-        localStorage.setItem(key, JSON.stringify(defaults));
+        setProgress({});
       }
     } catch (err) {
-      console.error(err);
       setCurrentUser(null);
     }
   }, []);
@@ -70,31 +79,41 @@ export default function EnrollmentChecklist() {
     );
   }
 
-  const doneCount = ITEMS_DEFAULT.reduce((acc, it) => acc + (progress[it.id] ? 1 : 0), 0);
-  const total = ITEMS_DEFAULT.length;
-
-  const nextStep = ITEMS_DEFAULT.find((it) => !progress[it.id]);
+  const steps = getStepsForType(studentType, irregular);
+  const doneCount = steps.reduce((acc, it) => acc + (progress[it.id] ? 1 : 0), 0);
+  const total = steps.length;
+  const nextStep = steps.find((it) => !progress[it.id]);
 
   return (
     <div className="card">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
           <div className="card-title">Enrollment steps</div>
-          <div style={{ fontSize: 12, color: "#6b7280" }}>{`${doneCount} of ${total} complete`}</div>
+          <div style={{ fontSize: 12, color: "#6b7280" }}>
+            {studentType ? (
+              <span style={{ marginRight: 6 }}>
+                {studentType === "continuing" && irregular === "yes" ? "Irregular · " :
+                 studentType === "continuing" && irregular === "no" ? "Regular · " :
+                 studentType === "new" ? "New Student · " :
+                 studentType === "transferee" ? "Transferee · " : ""}
+              </span>
+            ) : null}
+            {`${doneCount} of ${total} complete`}
+          </div>
         </div>
         <div>
           {nextStep ? (
-            <button className="continue-link" onClick={() => navigate(`/apply-now?step=${nextStep.id}`)}>
+            <button className="continue-link" onClick={() => navigate("/enrollment")}>
               Continue →
             </button>
           ) : (
-            <span style={{ color: "#10b981", fontWeight: 600 }}>All done</span>
+            <span style={{ color: "#10b981", fontWeight: 600 }}>All done ✓</span>
           )}
         </div>
       </div>
 
       <div style={{ marginTop: 12 }}>
-        {ITEMS_DEFAULT.map((it) => {
+        {steps.map((it) => {
           const done = !!progress[it.id];
           return (
             <div className="checklist-row" key={it.id}>

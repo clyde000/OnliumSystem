@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./HomepageUniversity.css";
+import "./styles/HomepageUniversity.css";
 
 const courses = [
   {
@@ -47,9 +47,9 @@ export default function HomepageUniversity() {
 
         {/* CENTER: nav links */}
         <ul className="nav-links">
-          <li><a href="#">Home</a></li>
-          <li><a href="#">Courses</a></li>
-          <li><a href="#">About</a></li>
+          <li><a href="#home" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Home</a></li>
+          <li><a href="#courses" onClick={(e) => { e.preventDefault(); document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' }); }}>Courses</a></li>
+          <li><a href="#about" onClick={(e) => { e.preventDefault(); document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }); }}>About</a></li>
         </ul>
 
         {/* RIGHT: action buttons */}
@@ -65,19 +65,22 @@ export default function HomepageUniversity() {
       
       </nav>
 
-      <section className="hero">
-        <h1>Enroll in School<br />the Smart Way</h1>
-        <p>
-          Start your journey towards a brighter future. Join our school today and
-          take the first step towards success with a simple and fast enrollment process.
-        </p>
-        <div className="hero-actions">
-          <button className="btn-hero-primary">GET STARTED <span>→</span></button>
-          <button className="btn-hero-outline">Log in as moderator</button>
+      <section id="home" className="hero">
+        <div className="hero-content">
+          <img src="/assets/onliumlogobluematch.png" alt="ONL Logo" className="hero-logo" />
+          <h1>Enroll in School<br />the Smart Way</h1>
+          <p>
+            Start your journey towards a brighter future. Join our school today and
+            take the first step towards success with a simple and fast enrollment process.
+          </p>
+          <div className="hero-actions">
+            <button className="btn-hero-primary" onClick={() => navigate("/register/create")}>GET STARTED <span>→</span></button>
+            <button className="btn-hero-outline" onClick={() => navigate("/login")}>Log in as moderator</button>
+          </div>
         </div>
       </section>
-      <img className="hero-image" src="/assets/hero-image.png" alt="Hero" />
-      <div className="section-card">
+
+      <div id="courses" className="section-card">
         <h2>Enroll in Onlium the Smart Way</h2>
         <p className="section-subtitle">Choose your college program and take the first step toward your future career.</p>
 
@@ -91,6 +94,46 @@ export default function HomepageUniversity() {
           ))}
         </div>
       </div>
+
+      <section id="about" className="section-card">
+        <h2>About Onlium</h2>
+        <p className="section-subtitle">Learn more about our mission and features.</p>
+
+        <div className="about-grid">
+          <div className="about-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2544d4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 16v-4"/>
+              <path d="M12 8h.01"/>
+            </svg>
+          </div>
+          <div className="about-text">
+            Onlium is a centralized online enrollment platform designed to make the enrollment process 
+            simpler, faster, and more transparent for students and administrators. Say goodbye to long queues, 
+            repeated campus visits, and scattered academic information — Onlium brings everything you need 
+            into one place, from enrollment and study loads to school bulletins and LMS access. Built with 
+            students in mind, Onlium is here to make your academic journey smoother, wherever you are.
+          </div>
+          <div className="about-features">
+            <div className="feature-item">
+              <span className="feature-dot"></span>
+              <span>Fast Enrollment</span>
+            </div>
+            <div className="feature-item">
+              <span className="feature-dot"></span>
+              <span>Study Load Management</span>
+            </div>
+            <div className="feature-item">
+              <span className="feature-dot"></span>
+              <span>School Bulletins</span>
+            </div>
+            <div className="feature-item">
+              <span className="feature-dot"></span>
+              <span>LMS Access</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <div className="page-bottom" />
     </div>

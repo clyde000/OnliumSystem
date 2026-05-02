@@ -1,76 +1,89 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './ModeratorLogin.css';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./styles/Login.css";
 
-const ModeratorLogin = () => {
+const ADMIN_EMAIL = "admin@onlium.com";
+const ADMIN_PASSWORD = "Admin@2025!";
+
+export default function ModeratorLogin() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('moderator', { username, password });
-    navigate('/admin');
+    if (e && e.preventDefault) e.preventDefault();
+    setError("");
+
+    if (!email.trim() || !password) {
+      setError("Please enter email and password.");
+      return;
+    }
+
+    if (
+      email.toLowerCase() === ADMIN_EMAIL.toLowerCase() &&
+      password === ADMIN_PASSWORD
+    ) {
+      localStorage.setItem("onlium_admin", "true");
+      navigate("/admin/dashboard");
+    } else {
+      setError("Invalid email or password.");
+    }
   };
 
   return (
-    <div className="mod-page">
-      <div className="mod-branding">
-        <h1 className="mod-tagline">
-          Onlium <br />
-          offers <br />
-          Interactive <br />
-          learning <br />
-          experience
-        </h1>
+    <div className="login-page">
+      <div className="login-left">
+        <h1>Onlium offers Interactive learning experience</h1>
+        <div className="login-logo-bars">
+          <span />
+          <span />
+          <span />
+        </div>
       </div>
 
-      <div className="mod-card-wrapper">
-        <div className="mod-card-body">
-          <h2 className="mod-card-title">ADMIN</h2>
-          <p className="mod-card-subtitle">Log in to manage your platform</p>
+      <div className="login-card">
+        <button className="back-arrow" onClick={() => navigate("/")}>
+          <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="#1e293b" strokeWidth="1.8">
+            <path d="M15 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+        <h2>ADMIN</h2>
+        <p className="subtitle">Log in to manage your platform</p>
 
-          <form className="mod-form" onSubmit={handleSubmit}>
-            <div className="mod-form-group">
-              <label className="mod-form-label" htmlFor="mod-username">
-                Email address
-              </label>
-              <input
-                id="mod-username"
-                type="email"
-                className="mod-form-input"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                autoComplete="username"
-                placeholder="name@onlium.com"
-                required
-              />
-            </div>
+        {error && <div className="error-message">{error}</div>}
 
-            <div className="mod-form-group">
-              <label className="mod-form-label" htmlFor="mod-password">
-                Password
-              </label>
-              <input
-                id="mod-password"
-                type="password"
-                className="mod-form-input"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-                placeholder="Enter your password"
-                required
-              />
-            </div>
+        <label>Email Address</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="name@onlium.com"
+          autoComplete="off"
+        />
 
-            <button className="mod-btn-login" type="submit">
-              Log In
-            </button>
-          </form>
+        <label>Password</label>
+        <div className="password-wrapper">
+          <input
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your password"
+            autoComplete="new-password"
+          />
+          <button
+            className="toggle-password"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
         </div>
+
+        <button className="login-btn" onClick={handleSubmit}>
+          Log In
+        </button>
       </div>
     </div>
   );
-};
-
-export default ModeratorLogin;
+}

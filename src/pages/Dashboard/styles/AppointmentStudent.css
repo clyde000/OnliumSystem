@@ -219,3 +219,14 @@
   border-radius: 20px;
   border: 1px solid #16a34a;
 }
+
+@media (max-width: 768px) {
+  .appointment-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .book-slot-btn {
+    width: 100%;
+  }
+}

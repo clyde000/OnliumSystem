@@ -12,11 +12,6 @@ const schedules = [
       </svg>
     ),
     accent: "#f59e0b",
-    bg: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)",
-    border: "#fcd34d",
-    tag: "Most Popular",
-    tagColor: "#92400e",
-    tagBg: "#fef3c7",
     desc: "Ideal for students who prefer early classes and free afternoons.",
   },
   {
@@ -31,9 +26,6 @@ const schedules = [
       </svg>
     ),
     accent: "#2563eb",
-    bg: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)",
-    border: "#93c5fd",
-    tag: null,
     desc: "Flexible midday schedule with balanced morning and evening time.",
   },
   {
@@ -46,11 +38,6 @@ const schedules = [
       </svg>
     ),
     accent: "#7c3aed",
-    bg: "linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)",
-    border: "#c4b5fd",
-    tag: "Working Students",
-    tagColor: "#4c1d95",
-    tagBg: "#ede9fe",
     desc: "Perfect for students with daytime work or personal commitments.",
   },
 ];
@@ -166,7 +153,7 @@ export default function ChooseSchedule({ onNext, onBack }) {
               gap: 18,
               marginBottom: 32,
             }}>
-              {schedules.map(({ key, label, time, icon, accent, bg, border, tag, tagColor, tagBg, desc }) => {
+              {schedules.map(({ key, label, time, icon, accent, desc }) => {
                 const isSelected = selected === key;
                 return (
                   <button
@@ -178,38 +165,21 @@ export default function ChooseSchedule({ onNext, onBack }) {
                       borderRadius: 12,
                       cursor: "pointer",
                       textAlign: "center",
-                      border: isSelected ? `2px solid ${accent}` : "1px solid #eef2f6",
-                      background: isSelected ? bg : "#fff",
-                      boxShadow: isSelected
-                        ? `0 8px 24px ${accent}14`
-                        : "0 4px 12px rgba(18,24,40,0.03)",
-                      transition: "all .2s ease",
+                      border: isSelected ? "2px solid #2563eb" : "1px solid #eef2f6",
+                      background: "#fff",
+                      boxShadow: "0 4px 12px rgba(18,24,40,0.03)",
+                      transition: "border .2s ease",
                       outline: "none",
                       fontFamily: "'DM Sans', sans-serif",
                     }}
                   >
-                    {/* Tag */}
-                    {tag && (
-                      <div style={{
-                        position: "absolute", top: 12, right: 12,
-                        fontSize: 10, fontWeight: 700, letterSpacing: 0.4,
-                        padding: "3px 8px", borderRadius: 20,
-                        background: isSelected ? tagBg : "#f1f5f9",
-                        color: isSelected ? tagColor : "#94a3b8",
-                        transition: "all .2s",
-                      }}>
-                        {tag}
-                      </div>
-                    )}
-
                     {/* Selected checkmark */}
                     {isSelected && (
                       <div style={{
                         position: "absolute", top: 12, left: 12,
                         width: 22, height: 22, borderRadius: "50%",
-                        background: accent,
+                        background: "#2563eb",
                         display: "flex", alignItems: "center", justifyContent: "center",
-                        boxShadow: "0 6px 18px rgba(0,0,0,0.06)"
                       }}>
                         <svg width="11" height="11" fill="none" stroke="#fff" strokeWidth="2.5" viewBox="0 0 24 24">
                           <polyline points="20 6 9 17 4 12"/>
@@ -217,15 +187,14 @@ export default function ChooseSchedule({ onNext, onBack }) {
                       </div>
                     )}
 
-                    {/* Icon (rounded square) */}
+                    {/* Icon */}
                     <div style={{
                       width: 64, height: 64, borderRadius: 14,
-                      background: isSelected ? `${accent}18` : "#fbfdff",
+                      background: "#fbfdff",
                       display: "flex", alignItems: "center", justifyContent: "center",
                       margin: "0 auto 14px",
                       color: isSelected ? accent : "#94a3b8",
-                      transition: "all .2s",
-                      boxShadow: isSelected ? "inset 0 1px 0 rgba(255,255,255,0.6)" : "none",
+                      transition: "color .2s",
                     }}>
                       {icon}
                     </div>
@@ -234,9 +203,8 @@ export default function ChooseSchedule({ onNext, onBack }) {
                     <div style={{
                       fontSize: 17, fontWeight: 800,
                       fontFamily: "'Sora', sans-serif",
-                      color: isSelected ? "#0f172a" : "#1e293b",
+                      color: "#1e293b",
                       marginBottom: 6,
-                      transition: "color .2s",
                     }}>
                       {label}
                     </div>
@@ -244,7 +212,7 @@ export default function ChooseSchedule({ onNext, onBack }) {
                     {/* Divider */}
                     <div style={{
                       width: 40, height: 3, borderRadius: 4,
-                      background: isSelected ? accent : "#eef2f6",
+                      background: isSelected ? "#2563eb" : "#eef2f6",
                       margin: "0 auto 10px",
                       transition: "background .2s",
                     }}/>
@@ -252,7 +220,7 @@ export default function ChooseSchedule({ onNext, onBack }) {
                     {/* Time */}
                     <div style={{
                       fontSize: 13, fontWeight: 600,
-                      color: isSelected ? accent : "#475569",
+                      color: isSelected ? "#2563eb" : "#475569",
                       marginBottom: 10,
                       transition: "color .2s",
                     }}>
@@ -260,10 +228,7 @@ export default function ChooseSchedule({ onNext, onBack }) {
                     </div>
 
                     {/* Desc */}
-                    <div style={{
-                      fontSize: 12, color: "#94a3b8",
-                      lineHeight: 1.5,
-                    }}>
+                    <div style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.5 }}>
                       {desc}
                     </div>
                   </button>

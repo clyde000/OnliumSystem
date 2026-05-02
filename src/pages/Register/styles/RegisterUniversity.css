@@ -71,3 +71,29 @@
 
 .stair-deco { display:flex; gap:8px; margin-top:12px }
 .stair-deco__step { width:20px; height:8px; background:#e6edf3; border-radius:4px }
+
+@media (max-width: 768px) {
+  .register-page {
+    flex-direction: column;
+    padding: 24px 16px;
+    gap: 1rem;
+  }
+
+  .register-left {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .register-left__title {
+    font-size: 1.2rem;
+  }
+
+  .stair-deco {
+    justify-content: center;
+  }
+
+  .register-card {
+    width: 100%;
+    padding: 1.5rem;
+  }
+}

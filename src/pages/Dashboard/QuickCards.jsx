@@ -1,4 +1,4 @@
-import "./QuickCards.css";
+import "./styles/QuickCards.css";
 import { QUICK_CARDS } from "../data/quickCards";
 import { NavLink } from "react-router-dom";
 

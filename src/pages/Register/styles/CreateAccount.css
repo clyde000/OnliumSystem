@@ -1,0 +1,269 @@
+.create-page {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: linear-gradient(135deg, #2563eb 0%, #38bdf8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 80px;
+  padding: 48px 80px;
+  font-family: 'Inter', sans-serif;
+}
+
+.create-left {
+  color: #fff;
+  max-width: 320px;
+  margin-top: 0;
+  margin-left: 0;
+  text-align: left;
+}
+
+.create-left h1 {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 40px;
+  text-align: left;
+}
+
+.create-logo-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.create-logo-bars span {
+  display: block;
+  border-radius: 6px;
+}
+
+.create-logo-bars span:nth-child(1) {
+  height: 28px;
+  width: 160px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.create-logo-bars span:nth-child(2) {
+  height: 22px;
+  width: 130px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.create-logo-bars span:nth-child(3) {
+  height: 18px;
+  width: 100px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.create-card {
+  position: relative;
+  background: #fff;
+  border-radius: 28px;
+  padding: 56px 56px;
+  width: 640px;
+  box-shadow: 0 20px 60px rgba(4, 9, 30, 0.12);
+  margin-left: 60px;
+}
+
+.create-card h2 {
+  text-align: center;
+  font-size: 36px;
+  font-weight: 900;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.create-card .subtitle {
+  text-align: center;
+  font-size: 14px;
+  color: #94a3b8;
+  margin-bottom: 22px;
+}
+
+.auth-tabs {
+  display: flex;
+  background: #f1f5f9;
+  border-radius: 999px;
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tab-inactive {
+  background: transparent;
+  color: #94a3b8;
+}
+
+.tab-active {
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.create-card label {
+  display: block;
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.create-card input[type="text"],
+.create-card input[type="email"],
+.create-card input[type="password"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 18px;
+  border: 1.5px solid #eef2ff;
+  border-radius: 12px;
+  font-size: 15px;
+  color: #0f172a;
+  background: #fbfdff;
+  margin-bottom: 18px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.create-card input:focus {
+  border-color: #aecbff;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(37,99,235,0.06);
+}
+
+.create-password-wrapper {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.create-password-wrapper input {
+  padding-right: 56px !important;
+  margin-bottom: 0 !important;
+}
+
+.create-toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.name-row {
+  display: flex;
+  gap: 20px;
+}
+
+.name-row > div {
+  flex: 1;
+}
+
+.create-btn {
+  width: 100%;
+  padding: 18px 22px;
+  background: linear-gradient(90deg, #1e40af 0%, #2563eb 100%);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  letter-spacing: 0.4px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  box-shadow: 0 10px 30px rgba(37,99,235,0.22), inset 0 -6px 18px rgba(0,0,0,0.04);
+  margin-top: 8px;
+}
+
+.create-btn:active {
+  transform: translateY(1px);
+}
+
+.create-bottom-text {
+  text-align: center;
+  font-size: 13px;
+  color: #94a3b8;
+  margin-top: 20px;
+}
+
+.create-bottom-text a {
+  color: #2563eb;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.back-arrow {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: block;
+  position: absolute;
+  top: 28px;
+  left: 32px;
+  line-height: 1;
+  color: #1e293b;
+  transition: opacity 0.2s;
+}
+
+.back-arrow:hover {
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .create-page {
+    flex-direction: column;
+    gap: 32px;
+    padding: 32px 20px;
+  }
+
+  .create-left {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .create-left h1 {
+    font-size: 28px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .create-logo-bars {
+    align-items: center;
+  }
+
+  .create-card {
+    width: 100%;
+    padding: 32px 24px;
+    margin-left: 0;
+    border-radius: 20px;
+  }
+
+  .create-card h2 {
+    font-size: 26px;
+  }
+
+  .name-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .create-btn {
+    font-size: 16px;
+    padding: 14px;
+  }
+}

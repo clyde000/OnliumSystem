@@ -71,24 +71,37 @@ const TYPE_CONFIG = {
   continuing: {
     label: "Continuing Student",
     color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe",
-    icon: "📚",
+    icon: (
+      <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+      </svg>
+    ),
     bannerText: "As a continuing student, your Clearance from the previous semester is mandatory. You cannot proceed to the next step without it.",
   },
   new: {
     label: "New Student",
     color: "#16a34a", bg: "#f0fdf4", border: "#86efac",
-    icon: "🎒",
+    icon: (
+      <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    ),
     bannerText: "As a new student, upload your Form 138 (Report Card), Good Moral Certificate, and PSA Birth Certificate. These will be reviewed by the admissions office.",
   },
   transferee: {
     label: "Transferee",
     color: "#d97706", bg: "#fffbeb", border: "#fcd34d",
-    icon: "🔄",
+    icon: (
+      <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+        <path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+      </svg>
+    ),
     bannerText: "As a transferee, you must submit your TOR, Good Moral Certificate, and Honorable Dismissal. Your credentials will be evaluated before program placement.",
   },
 };
 
-export default function UploadRequirements({ studentType = "continuing", onBack, onNext }) {
+export default function UploadRequirements({ studentType = "continuing", irregular = null, onBack, onNext }) {
   const [uploaded, setUploaded] = useState({});
   const docs = DOCS_BY_TYPE[studentType] || DOCS_BY_TYPE.continuing;
   const cfg  = TYPE_CONFIG[studentType];
@@ -217,7 +230,7 @@ export default function UploadRequirements({ studentType = "continuing", onBack,
             }
           </span>
           <button onClick={() => allDone && onNext()} disabled={!allDone} style={{ padding: "10px 22px", borderRadius: 8, fontSize: 13.5, fontWeight: 600, cursor: allDone ? "pointer" : "not-allowed", background: allDone ? "#2563eb" : "#93c5fd", border: "none", color: "#fff", display: "flex", alignItems: "center", gap: 8, opacity: allDone ? 1 : .7 }}>
-            Next: Select Program
+            Next: {studentType === "continuing" && irregular === "yes" ? "Submit Requirements" : studentType === "continuing" ? "Choose Schedule" : "Select Program"}
             <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
           </button>
         </div>

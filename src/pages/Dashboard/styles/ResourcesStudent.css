@@ -147,3 +147,25 @@
   background: #f8fafc;
   border-color: #cbd5e1;
 }
+
+@media (max-width: 768px) {
+  .resources-student {
+    padding: 16px;
+  }
+
+  .resources-header-student {
+    padding: 18px 20px;
+  }
+
+  .resource-actions {
+    flex-wrap: wrap;
+  }
+
+  .resource-url {
+    width: 100%;
+  }
+
+  .open-btn, .copy-btn {
+    flex: 1;
+  }
+}

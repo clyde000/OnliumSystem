@@ -1,4 +1,4 @@
-import "./Appointments.css";
+import "./styles/Appointments.css";
 
 const APPOINTMENTS = [
   { label: "Tuition walk-in", status: "confirmed" },

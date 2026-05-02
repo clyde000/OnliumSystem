@@ -1,38 +1,100 @@
 import { useState } from "react";
 
-const CHECKLIST = [
-  { id:"c1", label:"All personal information is accurate and complete",        note:"Review Step 1 if you need to make changes." },
-  { id:"c2", label:"All required documents are uploaded and legible",           note:"Blurry or incomplete documents may cause delays." },
-  { id:"c3", label:"Selected program matches my intended degree",               note:"Program change after submission requires Registrar approval." },
-  { id:"c4", label:"Selected schedule has no time conflicts",                   note:"Double-check overlapping classes before submitting." },
-  { id:"c5", label:"My 2×2 photo has a white background and is clearly visible", note:"Photos not meeting requirements will be rejected." },
-  { id:"c6", label:"I understand enrollment is not final until payment is made", note:"Proceed to the cashier within 3 days of submission." },
-  { id:"c7", label:"I have read and agree to the ONLIUM Enrollment Terms",      note:"Available at the Registrar's office or on the portal." },
-];
-
-const SUMMARY_ROWS = [
-  { label:"Student Name",  value:"Ron Regodo" },
-  { label:"Student ID",    value:"ONLS-2025-00124" },
-  { label:"Program",       value:"BS Information Technology" },
-  { label:"Year Level",    value:"2nd Year — Continuing" },
-  { label:"School Year",   value:"2026" },
-  { label:"Total Units",   value:"17 units" },
-  { label:"Subjects",      value:"6 subjects" },
-  { label:"Uploaded Docs", value:"Requirements uploaded" },
-  { label:"Photo",         value:"2×2 ID photo uploaded" },
-];
-
-export default function SubmitRequirements({ onBack, onNext }) {
-  const [submitting,  setSubmitting]  = useState(false);
+export default function SubmitRequirements({ onBack, onNext, onSubmitted, studentType = "continuing", irregular = null }) {
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [confirmAll, setConfirmAll] = useState(false);
   const [confirmPending, setConfirmPending] = useState(false);
 
+  const TYPE_LABEL = {
+    new: "New Student",
+    transferee: "Transferee",
+    continuing: "Continuing Student",
+  };
+
+  const yearLevelLabel = studentType === "continuing"
+    ? `2nd Year — Continuing${irregular === "yes" ? " (Irregular)" : irregular === "no" ? " (Regular)" : ""}`
+    : studentType === "new" ? "1st Year — New Student"
+    : "Year Level TBD — Transferee";
+
+  const SUMMARY_ROWS = [
+    { label: "Student Name",  value: "Ron Regodo" },
+    { label: "Student ID",    value: "ONLS-2025-00124" },
+    { label: "Student Type",  value: TYPE_LABEL[studentType] },
+    ...(studentType === "continuing" && irregular ? [{ label: "Student Status", value: irregular === "yes" ? "Irregular Student" : "Regular Student" }] : []),
+    { label: "Program",       value: "BS Information Technology" },
+    { label: "Year Level",    value: yearLevelLabel },
+    { label: "School Year",   value: "2026" },
+    ...(irregular !== "yes" ? [
+      { label: "Total Units", value: "17 units" },
+      { label: "Subjects",    value: "6 subjects" },
+    ] : []),
+    { label: "Uploaded Docs", value: "Requirements uploaded" },
+    ...(studentType === "continuing" ? [{ label: "Clearance", value: "Uploaded ✓" }] : []),
+  ];
+
   function handleSubmit() {
     setSubmitting(true);
-    setTimeout(() => { setSubmitting(false); if (onNext) onNext(); }, 1800);
+    const user = JSON.parse(localStorage.getItem("onlium_current_user") || "{}");
+    const enrollmentData = {
+      studentType,
+      irregular,
+      approved: false,
+      submittedAt: new Date().toISOString(),
+      studentName: user.firstName && user.lastName ? `${user.lastName}, ${user.firstName}` : "Student",
+      email: user.email || "",
+      summary: SUMMARY_ROWS,
+    };
+    localStorage.setItem("onlium_enrollment", JSON.stringify(enrollmentData));
+
+    // Save to admin submissions list
+    const existing = JSON.parse(localStorage.getItem("onlium_submissions") || "[]");
+    const idx = existing.findIndex(s => s.email === user.email);
+    if (idx >= 0) existing[idx] = enrollmentData;
+    else existing.push(enrollmentData);
+    localStorage.setItem("onlium_submissions", JSON.stringify(existing));
+
+    // Mark progress
+    if (user.email) {
+      const key = `onlium_progress_${user.email}`;
+      const progress = {
+        personal: true, upload: true,
+        program: studentType !== "continuing",
+        schedule: !(studentType === "continuing" && irregular === "yes"),
+        submit: true,
+      };
+      localStorage.setItem(key, JSON.stringify(progress));
+    }
+    setTimeout(() => { setSubmitting(false); setSubmitted(true); if (onSubmitted) onSubmitted(); }, 1800);
   }
 
-  
+  // Success screen
+  if (submitted) {
+    return (
+      <div style={{ background:"#fff", border:"1px solid #e2e8f0", borderRadius:12, padding:48, textAlign:"center" }}>
+        <div style={{ width:64, height:64, borderRadius:"50%", background:"#f0fdf4", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 20px" }}>
+          <svg width="28" height="28" fill="none" stroke="#16a34a" strokeWidth="2.5" viewBox="0 0 24 24">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <span style={{ display:"inline-block", padding:"4px 14px", borderRadius:20, background:"#f0fdf4", color:"#16a34a", fontSize:12, fontWeight:700, border:"1px solid #86efac", marginBottom:16 }}>
+          Successfully Submitted
+        </span>
+        <h2 style={{ fontSize:20, fontWeight:700, color:"#1e293b", margin:"0 0 10px" }}>Requirements Submitted!</h2>
+        <p style={{ fontSize:14, color:"#64748b", lineHeight:1.7, maxWidth:440, margin:"0 auto 28px" }}>
+          Your enrollment requirements have been submitted successfully. Please wait for the admin to review and approve your application. You will be notified once it's processed.
+        </p>
+        <div style={{ background:"#fffbeb", border:"1px solid #fcd34d", borderRadius:10, padding:"14px 20px", display:"inline-flex", alignItems:"center", gap:10, marginBottom:28 }}>
+          <svg width="16" height="16" fill="none" stroke="#d97706" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span style={{ fontSize:13, color:"#92400e", fontWeight:500 }}>Status: Waiting for admin approval</span>
+        </div>
+        <br/>
+        <button onClick={() => onNext && onNext()} style={{ padding:"10px 28px", borderRadius:8, background:"#2563eb", color:"#fff", border:"none", fontWeight:600, fontSize:14, cursor:"pointer" }}>
+          Go to Dashboard
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div style={{ background:"#fff", border:"1px solid #e2e8f0", borderRadius:12, boxShadow:"0 1px 3px rgba(0,0,0,.08)", overflow:"hidden" }}>
@@ -48,15 +110,7 @@ export default function SubmitRequirements({ onBack, onNext }) {
       </div>
 
       <div style={{ padding:24 }}>
-        {/* Warning */}
-        <div style={{ background:"#fff7ed", border:"1px solid #fed7aa", borderRadius:8, padding:"12px 16px", display:"flex", gap:10, alignItems:"flex-start", marginBottom:24 }}>
-          <svg style={{ flexShrink:0, marginTop:1, color:"#ea580c" }} width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          <p style={{ fontSize:12.5, color:"#9a3412", lineHeight:1.5 }}>
-            <strong>Please review everything carefully.</strong> Once submitted, your requirements will be reviewed by the admin. Changes to your program or schedule require a formal request at the Registrar's Office.
-          </p>
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 24 }}>
+<div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 24 }}>
           <div>
             <div style={{ fontSize:11, fontWeight:700, letterSpacing:1, textTransform:"uppercase", color:"#2563eb", marginBottom:14, paddingBottom:6, borderBottom:"1px solid #eff6ff" }}>
               Enrollment Summary
@@ -86,17 +140,6 @@ export default function SubmitRequirements({ onBack, onNext }) {
               </div>
             </div>
           </div>
-
-          <aside>
-            <div style={{ padding:18, borderRadius:10, background:"#f1f8ff", border:"1px solid #dbeafe" }}>
-              <div style={{ fontSize:15, fontWeight:700, marginBottom:8 }}>After You Submit</div>
-              <ol style={{ paddingLeft:18, margin:0 }}>
-                <li style={{ marginBottom:8 }}><strong>Admin reviews your documents</strong><div style={{ fontSize:12, color:"#64748b" }}>Verification in progress</div></li>
-                <li style={{ marginBottom:8 }}><strong>Receive notification</strong><div style={{ fontSize:12, color:"#64748b" }}>We will inform you of approval</div></li>
-                <li><strong>Schedule payment</strong><div style={{ fontSize:12, color:"#64748b" }}>Proceed to appoint payment to complete enrollment</div></li>
-              </ol>
-            </div>
-          </aside>
         </div>
       </div>
 
@@ -117,7 +160,7 @@ export default function SubmitRequirements({ onBack, onNext }) {
             {submitting ? (
               <><svg style={{ animation:"spin 1s linear infinite" }} width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>Submitting…</>
             ) : (
-              <>Next: Finalize Enrollment<svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></>
+              <>Complete Enrollment<svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></>
             )}
           </button>
         </div>
