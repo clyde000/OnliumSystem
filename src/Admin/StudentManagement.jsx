@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import "./styles/StudentManagement.css";
 
 const STUDENTS = [
@@ -42,7 +43,9 @@ function BarChart({ data, color }) {
 }
 
 export default function StudentManagement() {
-  const [activeTab, setActiveTab] = useState("list");
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState(location.state?.tab || "list");
+  const [highlightEmail, setHighlightEmail] = useState(location.state?.email || null);
   const [submissions, setSubmissions] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [search, setSearch] = useState("");
@@ -110,9 +113,9 @@ export default function StudentManagement() {
 
   return (
     <div className="student-management">
-      <div className="page-header">
-        <h1>Student Management</h1>
-        <p>View and manage all student records, demographics, and applications</p>
+      <div style={{ background: "linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)", borderRadius: 16, padding: "24px 32px", marginBottom: 24, color: "#fff" }}>
+        <h1 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 6px" }}>Student Management</h1>
+        <p style={{ fontSize: 13, opacity: 0.85, margin: 0 }}>View and manage all student records, demographics, and applications</p>
       </div>
 
       <div className="tabs">
@@ -342,7 +345,7 @@ export default function StudentManagement() {
                 const initials = sub.studentName?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() || "??";
                 const submittedDate = sub.submittedAt ? new Date(sub.submittedAt).toLocaleString("en-PH", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
                 return (
-                  <div key={i} className="student-card">
+                  <div key={i} className="student-card" style={{ border: highlightEmail && sub.email === highlightEmail ? "2px solid #3b82f6" : undefined }}>
                     <div className="student-card-header">
                       <div className="student-avatar">{initials}</div>
                       <div className="student-info">

@@ -141,12 +141,12 @@ export default function Bulletin() {
         </div>
       )}
 
-      <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ background: "linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)", borderRadius: 16, padding: "24px 32px", marginBottom: 24, color: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
-          <h1>Bulletin</h1>
-          <p style={{ margin: "4px 0 0", fontSize: 13, opacity: 0.85 }}>Create and manage announcements for students</p>
+          <h1 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 6px" }}>Bulletin</h1>
+          <p style={{ fontSize: 13, opacity: 0.85, margin: 0 }}>Create and manage announcements for students</p>
         </div>
-        <button className="publish-btn" onClick={() => { resetForm(); setView("create"); }}>+ Create Post</button>
+        <button onClick={() => { resetForm(); setView("create"); }} style={{ padding: "10px 20px", background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.4)", color: "#fff", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: 600 }}>+ Create Post</button>
       </div>
 
       {/* Stats */}

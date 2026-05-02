@@ -1,7 +1,17 @@
 import { useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { IoIosArrowDown } from "react-icons/io";
 import "./styles/topbar.css";
+
+const pageTitles = {
+  "/admin": "Dashboard",
+  "/admin/students": "Student Management",
+  "/admin/curriculum": "Study Load & Curriculum Management",
+  "/admin/resources": "Resource Tab",
+  "/admin/bulletin": "Bulletin",
+  "/admin/appointments": "Appointment",
+};
 
 
 
@@ -9,6 +19,8 @@ export default function TopBar() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef(null);
+  const location = useLocation();
+  const pageTitle = pageTitles[location.pathname] || "Dashboard";
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -20,7 +32,7 @@ export default function TopBar() {
 
   return (
     <div className="topbar">
-      <div className="topbar-left"><span className="topbar-page-title">Dashboard</span></div>
+      <div className="topbar-left"></div>
       <div className="search-bar">
         <svg className="search-icon" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <circle cx="11" cy="11" r="8" strokeWidth="2" />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./styles/dashboardadmin.css";
 
 const INITIAL_APPOINTMENTS = [
@@ -19,7 +19,12 @@ function formatTime(t) {
 }
 
 export default function AdminAppointments() {
-  const [appointments, setAppointments] = useState(INITIAL_APPOINTMENTS);
+  const stored = JSON.parse(localStorage.getItem("onlium_appointments") || "null");
+  const [appointments, setAppointments] = useState(stored ?? INITIAL_APPOINTMENTS);
+
+  useEffect(() => {
+    localStorage.setItem("onlium_appointments", JSON.stringify(appointments));
+  }, [appointments]);
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [toast, setToast] = useState(null);

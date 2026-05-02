@@ -5,22 +5,21 @@
 }
 
 .resources-header-student {
-  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
   border-radius: 16px;
   padding: 24px 32px;
   margin-bottom: 24px;
-  color: #fff;
 }
 
 .resources-header-student h1 {
   font-size: 24px;
   font-weight: 700;
   margin: 0 0 8px 0;
+  color: #1e293b;
 }
 
 .resources-header-student p {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.9);
+  color: #64748b;
   margin: 0;
 }
 

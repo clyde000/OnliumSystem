@@ -1,13 +1,14 @@
+import { useState } from "react";
 import "./styles/sidebar.css";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 
 const navItems = [
-  { label: "Dashboard",                              icon: "dashboard",    to: "/admin" },
-  { label: "Student Management",                     icon: "students",     to: "/admin/students" },
-  { label: "Study Load & Curriculum Management",     icon: "curriculum",   to: "/admin/curriculum" },
-  { label: "Resource Tab",                           icon: "resources",    to: "/admin/resources" },
-  { label: "Bulletin",                               icon: "bulletin",     to: "/admin/bulletin" },
-  { label: "Appointment",                            icon: "appointments", to: "/admin/appointments" },
+  { label: "Dashboard",                          icon: "dashboard",    to: "/admin" },
+  { label: "Student Management",                 icon: "students",     to: "/admin/students" },
+  { label: "Study Load & Curriculum Management", icon: "curriculum",   to: "/admin/curriculum" },
+  { label: "Resource Tab",                       icon: "resources",    to: "/admin/resources" },
+  { label: "Bulletin",                           icon: "bulletin",     to: "/admin/bulletin" },
+  { label: "Appointment",                        icon: "appointments", to: "/admin/appointments" },
 ];
 
 const getIcon = (name) => {
@@ -64,6 +65,10 @@ const getIcon = (name) => {
 
 export default function Sidebar() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [openMenu, setOpenMenu] = useState(
+    location.pathname.startsWith("/admin/students") ? "Student Management" : null
+  );
 
   const handleLogout = () => {
     localStorage.removeItem("onlium_current_user");
@@ -79,17 +84,45 @@ export default function Sidebar() {
 
       <nav className="sidebar-nav">
         <p className="sidebar-section">Main Menu</p>
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.to === "/admin"}
-            className={({ isActive }) => `nav-item${isActive ? " active" : ""}`}
-          >
-            <span className="nav-icon">{getIcon(item.icon)}</span>
-            {item.label}
-          </NavLink>
-        ))}
+        {navItems.map((item) =>
+          item.sub ? (
+            <div key={item.to}>
+              <button
+                className={`nav-item nav-item-btn${location.pathname.startsWith(item.to) ? " active" : ""}`}
+                onClick={() => setOpenMenu(openMenu === item.label ? null : item.label)}
+              >
+                <span className="nav-icon">{getIcon(item.icon)}</span>
+                <span style={{ flex: 1 }}>{item.label}</span>
+              </button>
+              <div className={`sub-menu${openMenu === item.label ? " open" : ""}`}>
+                <div className="sub-menu-header">
+                  <span className="nav-icon">{getIcon(item.icon)}</span>
+                  {item.label}
+                </div>
+                {item.sub.map(s => (
+                  <NavLink
+                    key={s.label}
+                    to={s.to}
+                    state={{ tab: s.tab }}
+                    className={({ isActive }) => `sub-item${isActive ? " active" : ""}`}
+                  >
+                    {s.label}
+                  </NavLink>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === "/admin"}
+              className={({ isActive }) => `nav-item${isActive ? " active" : ""}`}
+            >
+              <span className="nav-icon">{getIcon(item.icon)}</span>
+              {item.label}
+            </NavLink>
+          )
+        )}
       </nav>
 
       <div className="sidebar-footer">

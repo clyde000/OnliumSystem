@@ -129,15 +129,13 @@ export default function ResourcesAdmin() {
       )}
 
       {/* Header */}
-      <div className="resources-header">
-        <div className="header-left">
-          <h1>Resources</h1>
-          <p>Upload and manage LMS links — students are notified automatically</p>
+      <div style={{ background: "linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)", borderRadius: 16, padding: "24px 32px", marginBottom: 24, color: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div>
+          <h1 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 6px" }}>Resource Tab</h1>
+          <p style={{ fontSize: 13, opacity: 0.85, margin: 0 }}>Upload and manage LMS links — students are notified automatically</p>
         </div>
         {!showForm && (
-          <button className="post-link-btn" onClick={() => { setShowForm(true); setEditId(null); setForm({ ...emptyForm }); setErrors({}); }}>
-            + Upload LMS Link
-          </button>
+          <button onClick={() => { setShowForm(true); setEditId(null); setForm({ ...emptyForm }); setErrors({}); }} style={{ padding: "10px 20px", background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.4)", color: "#fff", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: 600 }}>+ Upload LMS Link</button>
         )}
       </div>
 
