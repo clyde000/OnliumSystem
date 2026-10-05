@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authService } from "../../services/authService.js";
 import "./styles/Login.css";
-
-const ADMIN_EMAIL = "admin@onlium.com";
-const ADMIN_PASSWORD = "Admin@2025!";
 
 export default function ModeratorLogin() {
   const [email, setEmail] = useState("");
@@ -12,7 +10,7 @@ export default function ModeratorLogin() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
     setError("");
 
@@ -21,14 +19,17 @@ export default function ModeratorLogin() {
       return;
     }
 
-    if (
-      email.toLowerCase() === ADMIN_EMAIL.toLowerCase() &&
-      password === ADMIN_PASSWORD
-    ) {
-      localStorage.setItem("onlium_admin", "true");
-      navigate("/admin/dashboard");
-    } else {
-      setError("Invalid email or password.");
+    try {
+      const response = await authService.login(email, password);
+
+      if (response.success) {
+        authService.saveAdminSession();
+        navigate("/admin/dashboard");
+      } else {
+        setError(response.message || "Invalid email or password.");
+      }
+    } catch (err) {
+      setError("Login failed. Please check your credentials and try again.");
     }
   };
 

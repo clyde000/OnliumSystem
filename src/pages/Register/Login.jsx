@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authService } from "../../services/authService.js";
 import "./styles/Login.css";
 
 export default function Login() {
@@ -10,7 +11,7 @@ export default function Login() {
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
     setError("");
     setSuccess("");
@@ -20,29 +21,25 @@ export default function Login() {
       return;
     }
 
-    const usersJson = localStorage.getItem("onlium_users");
-    const users = usersJson ? JSON.parse(usersJson) : [];
+    try {
+      const response = await authService.login(email, password);
 
-    const user = users.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase()
-    );
-    if (!user) {
-      setError("No account found with this email. Please sign up.");
-      return;
+      if (response.token) {
+        const safeUser = {
+          email: response.email,
+          fullName: response.fullName,
+          role: response.role,
+          token: response.token,
+        };
+        authService.saveUserSession(safeUser);
+        setSuccess("Login successful!");
+        navigate("/dashboard");
+      } else {
+        setError("Invalid response from server.");
+      }
+    } catch (err) {
+      setError(err.message || "Login failed. Please check your credentials and try again.");
     }
-
-    if (user.password !== password) {
-      setError("Incorrect password.");
-      return;
-    }
-
-    const safeUser = {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-    };
-    localStorage.setItem("onlium_current_user", JSON.stringify(safeUser));
-navigate("/dashboard");
   };
 
   return (
